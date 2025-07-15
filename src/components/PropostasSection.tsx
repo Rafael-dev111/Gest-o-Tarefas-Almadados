@@ -1,0 +1,332 @@
+import { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useLocalStorage } from '../hooks/useLocalStorage';
+import { Cliente, Proposta } from '../types';
+
+export function PropostasSection() {
+  const [dataCreacao, setDataCreacao] = useState(new Date().toISOString().split('T')[0]);
+  const [clienteData, setClienteData] = useState({
+    empresa: '',
+    contacto: '',
+    telemovel: '',
+    email: '',
+    localidade: '',
+    morada: '',
+  });
+  const [assunto, setAssunto] = useState('');
+  const [seguimento, setSeguimento] = useState('');
+  const [editingProposta, setEditingProposta] = useState<string | null>(null);
+  const [editingSeguimento, setEditingSeguimento] = useState('');
+  const [editingSituacao, setEditingSituacao] = useState<'pendente' | 'sem-interesse' | 'final'>('pendente');
+  const [editingDetalhes, setEditingDetalhes] = useState('');
+  
+  const { propostas, adicionarProposta, atualizarProposta, buscarOuCriarCliente } = useLocalStorage();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!clienteData.empresa || !assunto) return;
+
+    const cliente = buscarOuCriarCliente(clienteData.empresa, clienteData.contacto);
+    
+    // Atualizar dados do cliente se fornecidos
+    if (clienteData.telemovel || clienteData.email || clienteData.localidade || clienteData.morada) {
+      // Aqui deveria chamar atualizarCliente, mas vou simplificar criando um novo cliente completo
+      const clienteCompleto: Cliente = {
+        ...cliente,
+        ...clienteData,
+      };
+      
+      adicionarProposta({
+        dataCreacao,
+        cliente: clienteCompleto,
+        assunto,
+        seguimento: seguimento ? [seguimento] : [],
+        situacao: 'pendente',
+      });
+    } else {
+      adicionarProposta({
+        dataCreacao,
+        cliente,
+        assunto,
+        seguimento: seguimento ? [seguimento] : [],
+        situacao: 'pendente',
+      });
+    }
+
+    // Reset form
+    setClienteData({
+      empresa: '',
+      contacto: '',
+      telemovel: '',
+      email: '',
+      localidade: '',
+      morada: '',
+    });
+    setAssunto('');
+    setSeguimento('');
+    setDataCreacao(new Date().toISOString().split('T')[0]);
+  };
+
+  const handleEdit = (proposta: Proposta) => {
+    setEditingProposta(proposta.id);
+    setEditingSeguimento(proposta.seguimento.join('\n'));
+    setEditingSituacao(proposta.situacao);
+    setEditingDetalhes(proposta.detalhesPendente || '');
+  };
+
+  const handleSaveEdit = (id: string) => {
+    atualizarProposta(id, {
+      seguimento: editingSeguimento.split('\n').filter(s => s.trim()),
+      situacao: editingSituacao,
+      detalhesPendente: editingDetalhes || undefined,
+    });
+    setEditingProposta(null);
+    setEditingSeguimento('');
+    setEditingDetalhes('');
+  };
+
+  const getSituacaoColor = (situacao: string) => {
+    switch (situacao) {
+      case 'pendente':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'sem-interesse':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'final':
+        return 'bg-green-100 text-green-800 border-green-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-primary">Adicionar Nova Proposta</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="prop-data">Data de Criação</Label>
+              <Input
+                id="prop-data"
+                type="date"
+                value={dataCreacao}
+                onChange={(e) => setDataCreacao(e.target.value)}
+                required
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="prop-empresa">Nome da Empresa</Label>
+                <Input
+                  id="prop-empresa"
+                  value={clienteData.empresa}
+                  onChange={(e) => setClienteData({...clienteData, empresa: e.target.value})}
+                  placeholder="Nome da empresa"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="prop-contacto">Nome do Contacto</Label>
+                <Input
+                  id="prop-contacto"
+                  value={clienteData.contacto}
+                  onChange={(e) => setClienteData({...clienteData, contacto: e.target.value})}
+                  placeholder="Nome do contacto"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="prop-telemovel">Telemóvel</Label>
+                <Input
+                  id="prop-telemovel"
+                  value={clienteData.telemovel}
+                  onChange={(e) => setClienteData({...clienteData, telemovel: e.target.value})}
+                  placeholder="Telemóvel"
+                />
+              </div>
+              <div>
+                <Label htmlFor="prop-email">Email</Label>
+                <Input
+                  id="prop-email"
+                  type="email"
+                  value={clienteData.email}
+                  onChange={(e) => setClienteData({...clienteData, email: e.target.value})}
+                  placeholder="Email"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="prop-localidade">Localidade</Label>
+                <Input
+                  id="prop-localidade"
+                  value={clienteData.localidade}
+                  onChange={(e) => setClienteData({...clienteData, localidade: e.target.value})}
+                  placeholder="Localidade"
+                />
+              </div>
+              <div>
+                <Label htmlFor="prop-morada">Morada</Label>
+                <Input
+                  id="prop-morada"
+                  value={clienteData.morada}
+                  onChange={(e) => setClienteData({...clienteData, morada: e.target.value})}
+                  placeholder="Morada"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="prop-assunto">Assunto</Label>
+              <Input
+                id="prop-assunto"
+                value={assunto}
+                onChange={(e) => setAssunto(e.target.value)}
+                placeholder="Assunto da proposta"
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="prop-seguimento">Seguimento Inicial (opcional)</Label>
+              <Textarea
+                id="prop-seguimento"
+                value={seguimento}
+                onChange={(e) => setSeguimento(e.target.value)}
+                placeholder="Detalhes do seguimento inicial"
+                rows={3}
+              />
+            </div>
+
+            <Button type="submit" className="w-full">
+              Adicionar Proposta
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-primary">Lista de Propostas</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {propostas.length === 0 ? (
+            <p className="text-gray-500 text-center py-8">Nenhuma proposta encontrada</p>
+          ) : (
+            <div className="space-y-4">
+              {propostas.map((proposta) => (
+                <div key={proposta.id} className="p-4 border rounded-lg bg-white border-gray-200">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h3 className="font-medium text-gray-900 mb-1">
+                        Proposta #{proposta.numeracao} - {proposta.assunto}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        <strong>Cliente:</strong> {proposta.cliente.empresa} ({proposta.cliente.contacto})
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        <strong>Data:</strong> {new Date(proposta.dataCreacao).toLocaleDateString('pt-PT')}
+                      </p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className={`px-2 py-1 rounded text-xs font-medium border ${getSituacaoColor(proposta.situacao)}`}>
+                        {proposta.situacao === 'pendente' ? 'Pendente' : 
+                         proposta.situacao === 'sem-interesse' ? 'Sem Interesse' : 'Final'}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEdit(proposta)}
+                      >
+                        Editar
+                      </Button>
+                    </div>
+                  </div>
+
+                  {editingProposta === proposta.id ? (
+                    <div className="space-y-4 border-t pt-4">
+                      <div>
+                        <Label>Seguimento</Label>
+                        <Textarea
+                          value={editingSeguimento}
+                          onChange={(e) => setEditingSeguimento(e.target.value)}
+                          rows={4}
+                          placeholder="Cada linha será um seguimento separado"
+                        />
+                      </div>
+                      <div>
+                        <Label>Situação</Label>
+                        <Select value={editingSituacao} onValueChange={(value: any) => setEditingSituacao(value)}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pendente">Pendente</SelectItem>
+                            <SelectItem value="sem-interesse">Sem Interesse</SelectItem>
+                            <SelectItem value="final">Final</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {editingSituacao === 'pendente' && (
+                        <div>
+                          <Label>Detalhes do Porquê Está Pendente</Label>
+                          <Textarea
+                            value={editingDetalhes}
+                            onChange={(e) => setEditingDetalhes(e.target.value)}
+                            rows={2}
+                            placeholder="Motivo pelo qual está pendente"
+                          />
+                        </div>
+                      )}
+                      <div className="flex space-x-2">
+                        <Button onClick={() => handleSaveEdit(proposta.id)}>
+                          Salvar
+                        </Button>
+                        <Button variant="outline" onClick={() => setEditingProposta(null)}>
+                          Cancelar
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="mt-4">
+                      {proposta.seguimento.length > 0 && (
+                        <div className="mb-4">
+                          <h4 className="font-medium text-gray-900 mb-2">Seguimento:</h4>
+                          <div className="space-y-1">
+                            {proposta.seguimento.map((seg, index) => (
+                              <p key={index} className="text-sm text-gray-700 pl-4 border-l-2 border-gray-200">
+                                {index + 1}. {seg}
+                              </p>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {proposta.situacao === 'pendente' && proposta.detalhesPendente && (
+                        <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
+                          <p className="text-sm text-yellow-800">
+                            <strong>Pendente:</strong> {proposta.detalhesPendente}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
