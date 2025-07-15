@@ -3,8 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Cliente } from '../types';
+import { Edit2, Trash2 } from 'lucide-react';
 
 export function ClientesSection() {
   const [clienteData, setClienteData] = useState({
@@ -17,7 +20,18 @@ export function ClientesSection() {
   });
   const [expandedClient, setExpandedClient] = useState<string | null>(null);
   
-  const { clientes, tarefas, propostas, adicionarCliente } = useLocalStorage();
+  // Estados para edição
+  const [editandoCliente, setEditandoCliente] = useState<Cliente | null>(null);
+  const [editClienteData, setEditClienteData] = useState({
+    empresa: '',
+    contacto: '',
+    telemovel: '',
+    email: '',
+    localidade: '',
+    morada: '',
+  });
+  
+  const { clientes, tarefas, propostas, adicionarCliente, atualizarCliente, eliminarCliente } = useLocalStorage();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,6 +67,50 @@ export function ClientesSection() {
 
   const toggleClienteExpansion = (clienteId: string) => {
     setExpandedClient(expandedClient === clienteId ? null : clienteId);
+  };
+
+  const iniciarEdicao = (cliente: Cliente) => {
+    setEditandoCliente(cliente);
+    setEditClienteData({
+      empresa: cliente.empresa,
+      contacto: cliente.contacto,
+      telemovel: cliente.telemovel,
+      email: cliente.email,
+      localidade: cliente.localidade,
+      morada: cliente.morada,
+    });
+  };
+
+  const salvarEdicao = () => {
+    if (!editandoCliente || !editClienteData.empresa) return;
+
+    atualizarCliente(editandoCliente.id, editClienteData);
+
+    setEditandoCliente(null);
+    setEditClienteData({
+      empresa: '',
+      contacto: '',
+      telemovel: '',
+      email: '',
+      localidade: '',
+      morada: '',
+    });
+  };
+
+  const cancelarEdicao = () => {
+    setEditandoCliente(null);
+    setEditClienteData({
+      empresa: '',
+      contacto: '',
+      telemovel: '',
+      email: '',
+      localidade: '',
+      morada: '',
+    });
+  };
+
+  const handleEliminarCliente = (id: string) => {
+    eliminarCliente(id);
   };
 
   return (
@@ -186,14 +244,124 @@ export function ClientesSection() {
                             </div>
                           </div>
                         </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => toggleClienteExpansion(cliente.id)}
-                          className="mt-2"
-                        >
-                          {expandedClient === cliente.id ? 'Ocultar' : 'Ver'} Histórico
-                        </Button>
+                        <div className="flex space-x-2 mt-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => toggleClienteExpansion(cliente.id)}
+                          >
+                            {expandedClient === cliente.id ? 'Ocultar' : 'Ver'} Histórico
+                          </Button>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => iniciarEdicao(cliente)}
+                              >
+                                <Edit2 size={14} />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[425px]">
+                              <DialogHeader>
+                                <DialogTitle>Editar Cliente</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <Label htmlFor="edit-empresa">Nome da Empresa</Label>
+                                    <Input
+                                      id="edit-empresa"
+                                      value={editClienteData.empresa}
+                                      onChange={(e) => setEditClienteData({...editClienteData, empresa: e.target.value})}
+                                      placeholder="Nome da empresa"
+                                      required
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label htmlFor="edit-contacto">Nome do Contacto</Label>
+                                    <Input
+                                      id="edit-contacto"
+                                      value={editClienteData.contacto}
+                                      onChange={(e) => setEditClienteData({...editClienteData, contacto: e.target.value})}
+                                      placeholder="Nome do contacto"
+                                    />
+                                  </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <Label htmlFor="edit-telemovel">Telemóvel</Label>
+                                    <Input
+                                      id="edit-telemovel"
+                                      value={editClienteData.telemovel}
+                                      onChange={(e) => setEditClienteData({...editClienteData, telemovel: e.target.value})}
+                                      placeholder="Telemóvel"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label htmlFor="edit-email">Email</Label>
+                                    <Input
+                                      id="edit-email"
+                                      type="email"
+                                      value={editClienteData.email}
+                                      onChange={(e) => setEditClienteData({...editClienteData, email: e.target.value})}
+                                      placeholder="Email"
+                                    />
+                                  </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <Label htmlFor="edit-localidade">Localidade</Label>
+                                    <Input
+                                      id="edit-localidade"
+                                      value={editClienteData.localidade}
+                                      onChange={(e) => setEditClienteData({...editClienteData, localidade: e.target.value})}
+                                      placeholder="Localidade"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label htmlFor="edit-morada">Morada</Label>
+                                    <Input
+                                      id="edit-morada"
+                                      value={editClienteData.morada}
+                                      onChange={(e) => setEditClienteData({...editClienteData, morada: e.target.value})}
+                                      placeholder="Morada"
+                                    />
+                                  </div>
+                                </div>
+                                <div className="flex space-x-2">
+                                  <Button onClick={salvarEdicao} className="flex-1">
+                                    Salvar
+                                  </Button>
+                                  <Button onClick={cancelarEdicao} variant="outline" className="flex-1">
+                                    Cancelar
+                                  </Button>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="destructive" size="sm">
+                                <Trash2 size={14} />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Confirmar Eliminação</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Tem certeza que deseja eliminar este cliente? Esta ação não pode ser desfeita.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleEliminarCliente(cliente.id)}>
+                                  Eliminar
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
                       </div>
                     </div>
 

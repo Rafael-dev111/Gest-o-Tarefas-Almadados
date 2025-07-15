@@ -5,8 +5,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Cliente, Proposta } from '../types';
+import { Edit2, Trash2 } from 'lucide-react';
 
 export function PropostasSection() {
   const [dataCreacao, setDataCreacao] = useState(new Date().toISOString().split('T')[0]);
@@ -25,7 +27,7 @@ export function PropostasSection() {
   const [editingSituacao, setEditingSituacao] = useState<'pendente' | 'sem-interesse' | 'final'>('pendente');
   const [editingDetalhes, setEditingDetalhes] = useState('');
   
-  const { propostas, adicionarProposta, atualizarProposta, buscarOuCriarCliente } = useLocalStorage();
+  const { propostas, adicionarProposta, atualizarProposta, eliminarProposta, buscarOuCriarCliente } = useLocalStorage();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,6 +90,10 @@ export function PropostasSection() {
     setEditingProposta(null);
     setEditingSeguimento('');
     setEditingDetalhes('');
+  };
+
+  const handleEliminarProposta = (id: string) => {
+    eliminarProposta(id);
   };
 
   const getSituacaoColor = (situacao: string) => {
@@ -249,8 +255,29 @@ export function PropostasSection() {
                         size="sm"
                         onClick={() => handleEdit(proposta)}
                       >
-                        Editar
+                        <Edit2 size={14} />
                       </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="sm">
+                            <Trash2 size={14} />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Confirmar Eliminação</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza que deseja eliminar esta proposta? Esta ação não pode ser desfeita.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleEliminarProposta(proposta.id)}>
+                              Eliminar
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </div>
 

@@ -145,6 +145,22 @@ export function useLocalStorage() {
     }
   };
 
+  // Eliminar entidades
+  const eliminarCliente = (id: string) => {
+    const clientesAtualizados = clientes.filter(cliente => cliente.id !== id);
+    salvarClientes(clientesAtualizados);
+  };
+
+  const eliminarTarefa = (id: string) => {
+    const tarefasAtualizadas = tarefas.filter(tarefa => tarefa.id !== id);
+    salvarTarefas(tarefasAtualizadas);
+  };
+
+  const eliminarProposta = (id: string) => {
+    const propostasAtualizadas = propostas.filter(proposta => proposta.id !== id);
+    salvarPropostas(propostasAtualizadas);
+  };
+
   return {
     clientes,
     tarefas,
@@ -155,6 +171,9 @@ export function useLocalStorage() {
     atualizarTarefa,
     atualizarProposta,
     atualizarCliente,
+    eliminarCliente,
+    eliminarTarefa,
+    eliminarProposta,
     buscarOuCriarCliente,
     exportarDados,
     importarDados,
