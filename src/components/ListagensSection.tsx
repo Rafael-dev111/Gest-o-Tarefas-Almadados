@@ -5,7 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import { Printer } from 'lucide-react';
+import { Printer, FileText } from 'lucide-react';
+import html2pdf from 'html2pdf.js';
 
 export function ListagensSection() {
   const [filtroTipo, setFiltroTipo] = useState<'tarefas' | 'propostas' | 'clientes'>('tarefas');
@@ -96,6 +97,21 @@ export function ListagensSection() {
         janelaImpressao.print();
         janelaImpressao.close();
       }
+    }
+  };
+
+  const handleGerarPDF = () => {
+    const conteudo = document.getElementById('conteudo-impressao');
+    if (conteudo) {
+      const opt = {
+        margin: 1,
+        filename: `almadados_${filtroTipo}_${new Date().toLocaleDateString('pt-PT').replace(/\//g, '-')}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      
+      html2pdf().from(conteudo).set(opt).save();
     }
   };
 
@@ -285,10 +301,16 @@ export function ListagensSection() {
             <div className="text-sm text-gray-600">
               Total de registos: {dadosFiltrados.length}
             </div>
-            <Button onClick={handleImprimir} className="flex items-center space-x-2">
-              <Printer size={16} />
-              <span>Imprimir</span>
-            </Button>
+            <div className="flex space-x-2">
+              <Button onClick={handleImprimir} className="flex items-center space-x-2">
+                <Printer size={16} />
+                <span>Imprimir</span>
+              </Button>
+              <Button onClick={handleGerarPDF} className="flex items-center space-x-2 bg-red-600 hover:bg-red-700">
+                <FileText size={16} />
+                <span>Gerar PDF</span>
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
