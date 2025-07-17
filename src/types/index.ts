@@ -1,3 +1,4 @@
+
 export interface Area {
   id: string;
   nome: string;
@@ -27,22 +28,22 @@ export interface Tarefa {
   criadaEm: string;
 }
 
-export interface Proposta {
-  id: string;
-  dataCreacao: string;
-  cliente: Cliente;
-  assunto: string;
-  seguimento: string[];
-  numeracao: number;
-  situacao: 'pendente' | 'sem-interesse' | 'final';
-  detalhesPendente?: string;
-  area?: string;
-  criadaEm: string;
-}
-
 export interface Seguimento {
   id: string;
   data: string;
   detalhes: string;
   tipo: 'proposta' | 'reuniao' | 'chamada' | 'email' | 'outro';
+}
+
+export interface Proposta {
+  id: string;
+  dataCreacao: string;
+  cliente: Cliente;
+  assunto: string;
+  seguimento: Seguimento[];
+  numeracao: number;
+  situacao: 'pendente' | 'sem-interesse' | 'final';
+  detalhesPendente?: string;
+  area?: string;
+  criadaEm: string;
 }

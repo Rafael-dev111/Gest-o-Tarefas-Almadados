@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Cliente, Tarefa, Proposta, Area } from '../types';
+import { Cliente, Tarefa, Proposta, Area, Seguimento } from '../types';
 
 export function useLocalStorage() {
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -96,6 +96,21 @@ export function useLocalStorage() {
     };
     salvarAreas([...areas, novaArea]);
     return novaArea;
+  };
+
+  const adicionarSeguimentoProposta = (propostaId: string, seguimento: Omit<Seguimento, 'id'>) => {
+    const novoSeguimento: Seguimento = {
+      ...seguimento,
+      id: Date.now().toString(),
+    };
+    
+    const propostasAtualizadas = propostas.map(proposta => 
+      proposta.id === propostaId 
+        ? { ...proposta, seguimento: [...proposta.seguimento, novoSeguimento] }
+        : proposta
+    );
+    salvarPropostas(propostasAtualizadas);
+    return novoSeguimento;
   };
 
   // Atualizar entidades
@@ -202,6 +217,7 @@ export function useLocalStorage() {
     adicionarTarefa,
     adicionarProposta,
     adicionarArea,
+    adicionarSeguimentoProposta,
     atualizarTarefa,
     atualizarProposta,
     atualizarCliente,

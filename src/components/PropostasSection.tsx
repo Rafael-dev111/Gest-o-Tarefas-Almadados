@@ -9,6 +9,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Cliente, Proposta } from '../types';
+import { SeguimentoManager } from './SeguimentoManager';
 import { Edit2, Trash2, Clock, CheckCircle, XCircle } from 'lucide-react';
 
 export function PropostasSection() {
@@ -22,15 +23,14 @@ export function PropostasSection() {
     morada: '',
   });
   const [assunto, setAssunto] = useState('');
-  const [seguimento, setSeguimento] = useState('');
+  const [seguimentoInicial, setSeguimentoInicial] = useState('');
   const [area, setArea] = useState('');
   const [editingProposta, setEditingProposta] = useState<string | null>(null);
-  const [editingSeguimento, setEditingSeguimento] = useState('');
   const [editingSituacao, setEditingSituacao] = useState<'pendente' | 'sem-interesse' | 'final'>('pendente');
   const [editingDetalhes, setEditingDetalhes] = useState('');
   const [editingArea, setEditingArea] = useState('');
   
-  const { propostas, areas, adicionarProposta, atualizarProposta, eliminarProposta, buscarOuCriarCliente } = useLocalStorage();
+  const { propostas, areas, adicionarProposta, adicionarSeguimentoProposta, atualizarProposta, eliminarProposta, buscarOuCriarCliente } = useLocalStorage();
 
   // Filtrar propostas por situação
   const propostasPendentes = propostas.filter(proposta => proposta.situacao === 'pendente');
@@ -43,32 +43,25 @@ export function PropostasSection() {
 
     const cliente = buscarOuCriarCliente(clienteData.empresa, clienteData.contacto);
     
-    // Atualizar dados do cliente se fornecidos
-    if (clienteData.telemovel || clienteData.email || clienteData.localidade || clienteData.morada) {
-      // Aqui deveria chamar atualizarCliente, mas vou simplificar criando um novo cliente completo
-      const clienteCompleto: Cliente = {
-        ...cliente,
-        ...clienteData,
-      };
-      
+    // Criar seguimento inicial se fornecido
+    const seguimentosIniciais = seguimentoInicial ? [{
+      id: Date.now().toString(),
+      data: dataCreacao,
+      detalhes: seguimentoInicial,
+      tipo: 'proposta' as const,
+    }] : [];
+    
     adicionarProposta({
       dataCreacao,
-      cliente: clienteCompleto,
+      cliente: {
+        ...cliente,
+        ...clienteData,
+      },
       assunto,
-      seguimento: seguimento ? [seguimento] : [],
+      seguimento: seguimentosIniciais,
       situacao: 'pendente',
       area: area || undefined,
     });
-    } else {
-      adicionarProposta({
-        dataCreacao,
-        cliente,
-        assunto,
-        seguimento: seguimento ? [seguimento] : [],
-        situacao: 'pendente',
-        area: area || undefined,
-      });
-    }
 
     // Reset form
     setClienteData({
@@ -80,14 +73,13 @@ export function PropostasSection() {
       morada: '',
     });
     setAssunto('');
-    setSeguimento('');
+    setSeguimentoInicial('');
     setArea('');
     setDataCreacao(new Date().toISOString().split('T')[0]);
   };
 
   const handleEdit = (proposta: Proposta) => {
     setEditingProposta(proposta.id);
-    setEditingSeguimento(proposta.seguimento.join('\n'));
     setEditingSituacao(proposta.situacao);
     setEditingDetalhes(proposta.detalhesPendente || '');
     setEditingArea(proposta.area || '');
@@ -95,19 +87,21 @@ export function PropostasSection() {
 
   const handleSaveEdit = (id: string) => {
     atualizarProposta(id, {
-      seguimento: editingSeguimento.split('\n').filter(s => s.trim()),
       situacao: editingSituacao,
       detalhesPendente: editingDetalhes || undefined,
       area: editingArea || undefined,
     });
     setEditingProposta(null);
-    setEditingSeguimento('');
     setEditingDetalhes('');
     setEditingArea('');
   };
 
   const handleEliminarProposta = (id: string) => {
     eliminarProposta(id);
+  };
+
+  const handleAddSeguimento = (propostaId: string, seguimento: any) => {
+    adicionarSeguimentoProposta(propostaId, seguimento);
   };
 
   const getSituacaoColor = (situacao: string) => {
@@ -122,6 +116,129 @@ export function PropostasSection() {
         return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
+
+  const renderProposta = (proposta: Proposta) => (
+    <div key={proposta.id} className="p-4 border rounded-lg bg-white border-gray-200">
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <h3 className="font-medium text-gray-900 mb-1">
+            Proposta #{proposta.numeracao} - {proposta.assunto}
+          </h3>
+          <p className="text-sm text-gray-600">
+            <strong>Cliente:</strong> {proposta.cliente.empresa} ({proposta.cliente.contacto})
+          </p>
+          <p className="text-sm text-gray-600">
+            <strong>Data:</strong> {new Date(proposta.dataCreacao).toLocaleDateString('pt-PT')}
+          </p>
+          {proposta.area && (
+            <p className="text-sm text-gray-600">
+              <strong>Área:</strong> {proposta.area}
+            </p>
+          )}
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className={`px-2 py-1 rounded text-xs font-medium border ${getSituacaoColor(proposta.situacao)}`}>
+            {proposta.situacao === 'pendente' ? 'Pendente' : 
+             proposta.situacao === 'sem-interesse' ? 'Sem Interesse' : 'Final'}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleEdit(proposta)}
+          >
+            <Edit2 size={14} />
+          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="sm">
+                <Trash2 size={14} />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Confirmar Eliminação</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Tem certeza que deseja eliminar esta proposta? Esta ação não pode ser desfeita.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={() => handleEliminarProposta(proposta.id)}>
+                  Eliminar
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </div>
+
+      {editingProposta === proposta.id ? (
+        <div className="space-y-4 border-t pt-4">
+          <div>
+            <Label>Situação</Label>
+            <Select value={editingSituacao} onValueChange={(value: any) => setEditingSituacao(value)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pendente">Pendente</SelectItem>
+                <SelectItem value="sem-interesse">Sem Interesse</SelectItem>
+                <SelectItem value="final">Final</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {editingSituacao === 'pendente' && (
+            <div>
+              <Label>Detalhes do Porquê Está Pendente</Label>
+              <Textarea
+                value={editingDetalhes}
+                onChange={(e) => setEditingDetalhes(e.target.value)}
+                rows={2}
+                placeholder="Motivo pelo qual está pendente"
+              />
+            </div>
+          )}
+          <div>
+            <Label>Área</Label>
+            <Select value={editingArea} onValueChange={setEditingArea}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione uma área" />
+              </SelectTrigger>
+              <SelectContent>
+                {areas.map((area) => (
+                  <SelectItem key={area.id} value={area.nome}>
+                    {area.nome}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex space-x-2">
+            <Button onClick={() => handleSaveEdit(proposta.id)}>
+              Salvar
+            </Button>
+            <Button variant="outline" onClick={() => setEditingProposta(null)}>
+              Cancelar
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="mt-4">
+          <SeguimentoManager
+            seguimentos={proposta.seguimento}
+            onAddSeguimento={(seguimento) => handleAddSeguimento(proposta.id, seguimento)}
+          />
+          {proposta.situacao === 'pendente' && proposta.detalhesPendente && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mt-4">
+              <p className="text-sm text-yellow-800">
+                <strong>Pendente:</strong> {proposta.detalhesPendente}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -222,8 +339,8 @@ export function PropostasSection() {
               <Label htmlFor="prop-seguimento">Seguimento Inicial (opcional)</Label>
               <Textarea
                 id="prop-seguimento"
-                value={seguimento}
-                onChange={(e) => setSeguimento(e.target.value)}
+                value={seguimentoInicial}
+                onChange={(e) => setSeguimentoInicial(e.target.value)}
                 placeholder="Detalhes do seguimento inicial"
                 rows={3}
               />
@@ -294,145 +411,7 @@ export function PropostasSection() {
                 <p className="text-gray-500 text-center py-8">Nenhuma proposta pendente</p>
               ) : (
                 <div className="space-y-4">
-                  {propostasPendentes.map((proposta) => (
-                    <div key={proposta.id} className="p-4 border rounded-lg bg-white border-gray-200">
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <h3 className="font-medium text-gray-900 mb-1">
-                            Proposta #{proposta.numeracao} - {proposta.assunto}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            <strong>Cliente:</strong> {proposta.cliente.empresa} ({proposta.cliente.contacto})
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            <strong>Data:</strong> {new Date(proposta.dataCreacao).toLocaleDateString('pt-PT')}
-                          </p>
-                          {proposta.area && (
-                            <p className="text-sm text-gray-600">
-                              <strong>Área:</strong> {proposta.area}
-                            </p>
-                          )}
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className={`px-2 py-1 rounded text-xs font-medium border ${getSituacaoColor(proposta.situacao)}`}>
-                            {proposta.situacao === 'pendente' ? 'Pendente' : 
-                             proposta.situacao === 'sem-interesse' ? 'Sem Interesse' : 'Final'}
-                          </span>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEdit(proposta)}
-                          >
-                            <Edit2 size={14} />
-                          </Button>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="destructive" size="sm">
-                                <Trash2 size={14} />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Confirmar Eliminação</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Tem certeza que deseja eliminar esta proposta? Esta ação não pode ser desfeita.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleEliminarProposta(proposta.id)}>
-                                  Eliminar
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      </div>
-
-                      {editingProposta === proposta.id ? (
-                        <div className="space-y-4 border-t pt-4">
-                          <div>
-                            <Label>Seguimento</Label>
-                            <Textarea
-                              value={editingSeguimento}
-                              onChange={(e) => setEditingSeguimento(e.target.value)}
-                              rows={4}
-                              placeholder="Cada linha será um seguimento separado"
-                            />
-                          </div>
-                          <div>
-                            <Label>Situação</Label>
-                            <Select value={editingSituacao} onValueChange={(value: any) => setEditingSituacao(value)}>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="pendente">Pendente</SelectItem>
-                                <SelectItem value="sem-interesse">Sem Interesse</SelectItem>
-                                <SelectItem value="final">Final</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          {editingSituacao === 'pendente' && (
-                            <div>
-                              <Label>Detalhes do Porquê Está Pendente</Label>
-                              <Textarea
-                                value={editingDetalhes}
-                                onChange={(e) => setEditingDetalhes(e.target.value)}
-                                rows={2}
-                                placeholder="Motivo pelo qual está pendente"
-                              />
-                            </div>
-                          )}
-                          <div>
-                            <Label>Área</Label>
-                            <Select value={editingArea} onValueChange={setEditingArea}>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Selecione uma área" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {areas.map((area) => (
-                                  <SelectItem key={area.id} value={area.nome}>
-                                    {area.nome}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="flex space-x-2">
-                            <Button onClick={() => handleSaveEdit(proposta.id)}>
-                              Salvar
-                            </Button>
-                            <Button variant="outline" onClick={() => setEditingProposta(null)}>
-                              Cancelar
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="mt-4">
-                          {proposta.seguimento.length > 0 && (
-                            <div className="mb-4">
-                              <h4 className="font-medium text-gray-900 mb-2">Seguimento:</h4>
-                              <div className="space-y-1">
-                                {proposta.seguimento.map((seg, index) => (
-                                  <p key={index} className="text-sm text-gray-700 pl-4 border-l-2 border-gray-200">
-                                    {index + 1}. {seg}
-                                  </p>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                          {proposta.situacao === 'pendente' && proposta.detalhesPendente && (
-                            <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
-                              <p className="text-sm text-yellow-800">
-                                <strong>Pendente:</strong> {proposta.detalhesPendente}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                  {propostasPendentes.map(renderProposta)}
                 </div>
               )}
             </TabsContent>
@@ -442,117 +421,7 @@ export function PropostasSection() {
                 <p className="text-gray-500 text-center py-8">Nenhuma proposta finalizada</p>
               ) : (
                 <div className="space-y-4">
-                  {propostasFinalizadas.map((proposta) => (
-                    <div key={proposta.id} className="p-4 border rounded-lg bg-white border-gray-200">
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <h3 className="font-medium text-gray-900 mb-1">
-                            Proposta #{proposta.numeracao} - {proposta.assunto}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            <strong>Cliente:</strong> {proposta.cliente.empresa} ({proposta.cliente.contacto})
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            <strong>Data:</strong> {new Date(proposta.dataCreacao).toLocaleDateString('pt-PT')}
-                          </p>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className={`px-2 py-1 rounded text-xs font-medium border ${getSituacaoColor(proposta.situacao)}`}>
-                            Final
-                          </span>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEdit(proposta)}
-                          >
-                            <Edit2 size={14} />
-                          </Button>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="destructive" size="sm">
-                                <Trash2 size={14} />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Confirmar Eliminação</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Tem certeza que deseja eliminar esta proposta? Esta ação não pode ser desfeita.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleEliminarProposta(proposta.id)}>
-                                  Eliminar
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      </div>
-
-                      {editingProposta === proposta.id ? (
-                        <div className="space-y-4 border-t pt-4">
-                          <div>
-                            <Label>Seguimento</Label>
-                            <Textarea
-                              value={editingSeguimento}
-                              onChange={(e) => setEditingSeguimento(e.target.value)}
-                              rows={4}
-                              placeholder="Cada linha será um seguimento separado"
-                            />
-                          </div>
-                          <div>
-                            <Label>Situação</Label>
-                            <Select value={editingSituacao} onValueChange={(value: any) => setEditingSituacao(value)}>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="pendente">Pendente</SelectItem>
-                                <SelectItem value="sem-interesse">Sem Interesse</SelectItem>
-                                <SelectItem value="final">Final</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          {editingSituacao === 'pendente' && (
-                            <div>
-                              <Label>Detalhes do Porquê Está Pendente</Label>
-                              <Textarea
-                                value={editingDetalhes}
-                                onChange={(e) => setEditingDetalhes(e.target.value)}
-                                rows={2}
-                                placeholder="Motivo pelo qual está pendente"
-                              />
-                            </div>
-                          )}
-                          <div className="flex space-x-2">
-                            <Button onClick={() => handleSaveEdit(proposta.id)}>
-                              Salvar
-                            </Button>
-                            <Button variant="outline" onClick={() => setEditingProposta(null)}>
-                              Cancelar
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="mt-4">
-                          {proposta.seguimento.length > 0 && (
-                            <div className="mb-4">
-                              <h4 className="font-medium text-gray-900 mb-2">Seguimento:</h4>
-                              <div className="space-y-1">
-                                {proposta.seguimento.map((seg, index) => (
-                                  <p key={index} className="text-sm text-gray-700 pl-4 border-l-2 border-gray-200">
-                                    {index + 1}. {seg}
-                                  </p>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                  {propostasFinalizadas.map(renderProposta)}
                 </div>
               )}
             </TabsContent>
@@ -562,117 +431,7 @@ export function PropostasSection() {
                 <p className="text-gray-500 text-center py-8">Nenhuma proposta sem interesse</p>
               ) : (
                 <div className="space-y-4">
-                  {propostasSemInteresse.map((proposta) => (
-                    <div key={proposta.id} className="p-4 border rounded-lg bg-white border-gray-200">
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <h3 className="font-medium text-gray-900 mb-1">
-                            Proposta #{proposta.numeracao} - {proposta.assunto}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            <strong>Cliente:</strong> {proposta.cliente.empresa} ({proposta.cliente.contacto})
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            <strong>Data:</strong> {new Date(proposta.dataCreacao).toLocaleDateString('pt-PT')}
-                          </p>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className={`px-2 py-1 rounded text-xs font-medium border ${getSituacaoColor(proposta.situacao)}`}>
-                            Sem Interesse
-                          </span>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEdit(proposta)}
-                          >
-                            <Edit2 size={14} />
-                          </Button>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="destructive" size="sm">
-                                <Trash2 size={14} />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Confirmar Eliminação</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Tem certeza que deseja eliminar esta proposta? Esta ação não pode ser desfeita.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleEliminarProposta(proposta.id)}>
-                                  Eliminar
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      </div>
-
-                      {editingProposta === proposta.id ? (
-                        <div className="space-y-4 border-t pt-4">
-                          <div>
-                            <Label>Seguimento</Label>
-                            <Textarea
-                              value={editingSeguimento}
-                              onChange={(e) => setEditingSeguimento(e.target.value)}
-                              rows={4}
-                              placeholder="Cada linha será um seguimento separado"
-                            />
-                          </div>
-                          <div>
-                            <Label>Situação</Label>
-                            <Select value={editingSituacao} onValueChange={(value: any) => setEditingSituacao(value)}>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="pendente">Pendente</SelectItem>
-                                <SelectItem value="sem-interesse">Sem Interesse</SelectItem>
-                                <SelectItem value="final">Final</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          {editingSituacao === 'pendente' && (
-                            <div>
-                              <Label>Detalhes do Porquê Está Pendente</Label>
-                              <Textarea
-                                value={editingDetalhes}
-                                onChange={(e) => setEditingDetalhes(e.target.value)}
-                                rows={2}
-                                placeholder="Motivo pelo qual está pendente"
-                              />
-                            </div>
-                          )}
-                          <div className="flex space-x-2">
-                            <Button onClick={() => handleSaveEdit(proposta.id)}>
-                              Salvar
-                            </Button>
-                            <Button variant="outline" onClick={() => setEditingProposta(null)}>
-                              Cancelar
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="mt-4">
-                          {proposta.seguimento.length > 0 && (
-                            <div className="mb-4">
-                              <h4 className="font-medium text-gray-900 mb-2">Seguimento:</h4>
-                              <div className="space-y-1">
-                                {proposta.seguimento.map((seg, index) => (
-                                  <p key={index} className="text-sm text-gray-700 pl-4 border-l-2 border-gray-200">
-                                    {index + 1}. {seg}
-                                  </p>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                  {propostasSemInteresse.map(renderProposta)}
                 </div>
               )}
             </TabsContent>
