@@ -21,7 +21,7 @@ export function PropostasSection() {
   const [formData, setFormData] = useState({
     clienteId: '',
     assunto: '',
-    situacao: 'pendente' as const,
+    situacao: 'pendente' as 'pendente' | 'sem-interesse' | 'final',
     detalhesPendente: '',
     area: ''
   });
@@ -62,8 +62,10 @@ export function PropostasSection() {
       });
     } else {
       adicionarProposta({
+        dataCreacao: new Date().toISOString(),
         cliente,
         assunto: formData.assunto.trim(),
+        seguimento: [],
         situacao: formData.situacao,
         detalhesPendente: formData.detalhesPendente.trim() || undefined,
         area: formData.area || undefined
@@ -193,7 +195,7 @@ export function PropostasSection() {
                 </div>
                 <div>
                   <Label htmlFor="situacao">Situação</Label>
-                  <Select value={formData.situacao} onValueChange={(value: any) => setFormData(prev => ({ ...prev, situacao: value }))}>
+                  <Select value={formData.situacao} onValueChange={(value: 'pendente' | 'sem-interesse' | 'final') => setFormData(prev => ({ ...prev, situacao: value }))}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
