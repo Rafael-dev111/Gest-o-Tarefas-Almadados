@@ -66,13 +66,14 @@ export function SeguimentoManager({ seguimentos, onAddSeguimento }: SeguimentoMa
     }
   };
 
-  // Ordenar seguimentos por data (mais recente primeiro) e adicionar numeração
+  // Ordenar seguimentos por data (mais antigo primeiro) e adicionar numeração
   const seguimentosOrdenados = seguimentos
-    .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())
+    .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())
     .map((seguimento, index) => ({
       ...seguimento,
-      numero: seguimentos.length - index
-    }));
+      numero: index + 1
+    }))
+    .reverse(); // Inverter para mostrar o mais recente primeiro
 
   return (
     <div className="space-y-4">
