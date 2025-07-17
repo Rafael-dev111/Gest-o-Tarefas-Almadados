@@ -125,7 +125,7 @@ export function TarefasSection() {
     p.cliente.empresa.toLowerCase().includes(editCliente.toLowerCase())
   );
 
-  const renderTarefaCard = (tarefa: Tarefa) => (
+  const renderTarefaCard = (tarefa: Tarefa, index: number) => (
     <div
       key={tarefa.id}
       className={`p-4 border rounded-lg ${
@@ -133,10 +133,15 @@ export function TarefasSection() {
       }`}
     >
       <div className="flex items-start space-x-3">
-        <Checkbox
-          checked={tarefa.concluida}
-          onCheckedChange={(checked) => toggleTarefa(tarefa.id, checked as boolean)}
-        />
+        <div className="flex items-center space-x-3">
+          <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+            <span className="text-sm font-medium text-primary">#{index + 1}</span>
+          </div>
+          <Checkbox
+            checked={tarefa.concluida}
+            onCheckedChange={(checked) => toggleTarefa(tarefa.id, checked as boolean)}
+          />
+        </div>
          <div className="flex-1">
            <div className="flex justify-between items-start mb-2">
              <h3 className={`font-medium ${tarefa.concluida ? 'line-through text-gray-500' : 'text-gray-900'}`}>
@@ -393,7 +398,7 @@ export function TarefasSection() {
                 <p className="text-gray-500 text-center py-8">Nenhuma tarefa pendente</p>
               ) : (
                 <div className="space-y-4">
-                  {tarefasPendentes.map((tarefa) => renderTarefaCard(tarefa))}
+                  {tarefasPendentes.map((tarefa, index) => renderTarefaCard(tarefa, index))}
                 </div>
               )}
             </TabsContent>
@@ -403,7 +408,7 @@ export function TarefasSection() {
                 <p className="text-gray-500 text-center py-8">Nenhuma tarefa concluída</p>
               ) : (
                 <div className="space-y-4">
-                  {tarefasConcluidas.map((tarefa) => renderTarefaCard(tarefa))}
+                  {tarefasConcluidas.map((tarefa, index) => renderTarefaCard(tarefa, index))}
                 </div>
               )}
             </TabsContent>

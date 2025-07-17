@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -124,6 +125,7 @@ export function ListagensSection() {
         <table className="w-full border-collapse border border-gray-300">
           <thead>
             <tr className="bg-gray-50">
+              <th className="border border-gray-300 p-2 text-left">#</th>
               <th className="border border-gray-300 p-2 text-left">Cliente</th>
               <th className="border border-gray-300 p-2 text-left">Assunto</th>
               <th className="border border-gray-300 p-2 text-left">Data</th>
@@ -132,8 +134,9 @@ export function ListagensSection() {
             </tr>
           </thead>
           <tbody>
-            {dadosFiltrados.map((tarefa: any) => (
+            {dadosFiltrados.map((tarefa: any, index: number) => (
               <tr key={tarefa.id}>
+                <td className="border border-gray-300 p-2 font-medium">#{index + 1}</td>
                 <td className="border border-gray-300 p-2">{tarefa.cliente}</td>
                 <td className="border border-gray-300 p-2">{tarefa.assunto}</td>
                 <td className="border border-gray-300 p-2">
@@ -161,6 +164,7 @@ export function ListagensSection() {
         <table className="w-full border-collapse border border-gray-300">
           <thead>
             <tr className="bg-gray-50">
+              <th className="border border-gray-300 p-2 text-left">#</th>
               <th className="border border-gray-300 p-2 text-left">Proposta</th>
               <th className="border border-gray-300 p-2 text-left">Cliente</th>
               <th className="border border-gray-300 p-2 text-left">Assunto</th>
@@ -170,8 +174,9 @@ export function ListagensSection() {
             </tr>
           </thead>
           <tbody>
-            {dadosFiltrados.map((proposta: any) => (
+            {dadosFiltrados.map((proposta: any, index: number) => (
               <tr key={proposta.id}>
+                <td className="border border-gray-300 p-2 font-medium">#{index + 1}</td>
                 <td className="border border-gray-300 p-2">#{proposta.numeracao}</td>
                 <td className="border border-gray-300 p-2">{proposta.cliente.empresa}</td>
                 <td className="border border-gray-300 p-2">{proposta.assunto}</td>
@@ -205,6 +210,7 @@ export function ListagensSection() {
         <table className="w-full border-collapse border border-gray-300">
           <thead>
             <tr className="bg-gray-50">
+              <th className="border border-gray-300 p-2 text-left">#</th>
               <th className="border border-gray-300 p-2 text-left">Empresa</th>
               <th className="border border-gray-300 p-2 text-left">Contacto</th>
               <th className="border border-gray-300 p-2 text-left">Telemóvel</th>
@@ -214,7 +220,7 @@ export function ListagensSection() {
             </tr>
           </thead>
           <tbody>
-            {dadosFiltrados.map((cliente: any) => {
+            {dadosFiltrados.map((cliente: any, index: number) => {
               const clientePropostas = propostas.filter(p => p.cliente.empresa === cliente.empresa);
               const primeiraPropostaData = clientePropostas.length > 0 ? 
                 new Date(Math.min(...clientePropostas.map(p => new Date(p.dataCreacao).getTime()))) : null;
@@ -223,6 +229,7 @@ export function ListagensSection() {
               
               return (
                 <tr key={cliente.id}>
+                  <td className="border border-gray-300 p-2 font-medium">#{index + 1}</td>
                   <td className="border border-gray-300 p-2">{cliente.empresa}</td>
                   <td className="border border-gray-300 p-2">{cliente.contacto || '-'}</td>
                   <td className="border border-gray-300 p-2">{cliente.telemovel || '-'}</td>

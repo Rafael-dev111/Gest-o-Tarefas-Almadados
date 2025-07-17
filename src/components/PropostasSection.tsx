@@ -117,24 +117,29 @@ export function PropostasSection() {
     }
   };
 
-  const renderProposta = (proposta: Proposta) => (
+  const renderProposta = (proposta: Proposta, index: number) => (
     <div key={proposta.id} className="p-4 border rounded-lg bg-white border-gray-200">
       <div className="flex justify-between items-start mb-4">
-        <div>
-          <h3 className="font-medium text-gray-900 mb-1">
-            Proposta #{proposta.numeracao} - {proposta.assunto}
-          </h3>
-          <p className="text-sm text-gray-600">
-            <strong>Cliente:</strong> {proposta.cliente.empresa} ({proposta.cliente.contacto})
-          </p>
-          <p className="text-sm text-gray-600">
-            <strong>Data:</strong> {new Date(proposta.dataCreacao).toLocaleDateString('pt-PT')}
-          </p>
-          {proposta.area && (
+        <div className="flex items-start space-x-3">
+          <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+            <span className="text-sm font-medium text-primary">#{index + 1}</span>
+          </div>
+          <div>
+            <h3 className="font-medium text-gray-900 mb-1">
+              Proposta #{proposta.numeracao} - {proposta.assunto}
+            </h3>
             <p className="text-sm text-gray-600">
-              <strong>Área:</strong> {proposta.area}
+              <strong>Cliente:</strong> {proposta.cliente.empresa} ({proposta.cliente.contacto})
             </p>
-          )}
+            <p className="text-sm text-gray-600">
+              <strong>Data:</strong> {new Date(proposta.dataCreacao).toLocaleDateString('pt-PT')}
+            </p>
+            {proposta.area && (
+              <p className="text-sm text-gray-600">
+                <strong>Área:</strong> {proposta.area}
+              </p>
+            )}
+          </div>
         </div>
         <div className="flex items-center space-x-2">
           <span className={`px-2 py-1 rounded text-xs font-medium border ${getSituacaoColor(proposta.situacao)}`}>
@@ -411,7 +416,7 @@ export function PropostasSection() {
                 <p className="text-gray-500 text-center py-8">Nenhuma proposta pendente</p>
               ) : (
                 <div className="space-y-4">
-                  {propostasPendentes.map(renderProposta)}
+                  {propostasPendentes.map((proposta, index) => renderProposta(proposta, index))}
                 </div>
               )}
             </TabsContent>
@@ -421,7 +426,7 @@ export function PropostasSection() {
                 <p className="text-gray-500 text-center py-8">Nenhuma proposta finalizada</p>
               ) : (
                 <div className="space-y-4">
-                  {propostasFinalizadas.map(renderProposta)}
+                  {propostasFinalizadas.map((proposta, index) => renderProposta(proposta, index))}
                 </div>
               )}
             </TabsContent>
@@ -431,7 +436,7 @@ export function PropostasSection() {
                 <p className="text-gray-500 text-center py-8">Nenhuma proposta sem interesse</p>
               ) : (
                 <div className="space-y-4">
-                  {propostasSemInteresse.map(renderProposta)}
+                  {propostasSemInteresse.map((proposta, index) => renderProposta(proposta, index))}
                 </div>
               )}
             </TabsContent>

@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -143,15 +144,20 @@ export function AreasSection() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {areas.map((area) => (
+        {areas.map((area, index) => (
           <Card key={area.id}>
             <CardHeader>
               <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle className="text-lg">{area.nome}</CardTitle>
-                  <CardDescription className="text-sm">
-                    Criada em {new Date(area.criadaEm).toLocaleDateString('pt-PT')}
-                  </CardDescription>
+                <div className="flex items-center space-x-3">
+                  <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                    <span className="text-sm font-medium text-primary">#{index + 1}</span>
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">{area.nome}</CardTitle>
+                    <CardDescription className="text-sm">
+                      Criada em {new Date(area.criadaEm).toLocaleDateString('pt-PT')}
+                    </CardDescription>
+                  </div>
                 </div>
                 <div className="flex space-x-1">
                   <Button
