@@ -38,39 +38,48 @@ export function ClientesSection() {
       return;
     }
 
-    if (editingCliente) {
-      atualizarCliente(editingCliente.id, {
-        empresa: formData.empresa.trim(),
-        contacto: formData.contacto.trim(),
-        telemovel: formData.telemovel.trim(),
-        email: formData.email.trim(),
-        localidade: formData.localidade.trim(),
-        morada: formData.morada.trim(),
-        area: formData.area || undefined
-      });
+    try {
+      if (editingCliente) {
+        atualizarCliente(editingCliente.id, {
+          empresa: formData.empresa.trim(),
+          contacto: formData.contacto.trim(),
+          telemovel: formData.telemovel.trim(),
+          email: formData.email.trim(),
+          localidade: formData.localidade.trim(),
+          morada: formData.morada.trim(),
+          area: formData.area || undefined
+        });
+        toast({
+          title: "Cliente atualizado",
+          description: "O cliente foi atualizado com sucesso",
+        });
+      } else {
+        adicionarCliente({
+          empresa: formData.empresa.trim(),
+          contacto: formData.contacto.trim(),
+          telemovel: formData.telemovel.trim(),
+          email: formData.email.trim(),
+          localidade: formData.localidade.trim(),
+          morada: formData.morada.trim(),
+          area: formData.area || undefined
+        });
+        toast({
+          title: "Cliente criado",
+          description: "O novo cliente foi criado com sucesso",
+        });
+      }
+
+      setFormData({ empresa: '', contacto: '', telemovel: '', email: '', localidade: '', morada: '', area: '' });
+      setEditingCliente(null);
+      setIsOpen(false);
+    } catch (error) {
+      console.error('Erro ao salvar cliente:', error);
       toast({
-        title: "Cliente atualizado",
-        description: "O cliente foi atualizado com sucesso",
-      });
-    } else {
-      adicionarCliente({
-        empresa: formData.empresa.trim(),
-        contacto: formData.contacto.trim(),
-        telemovel: formData.telemovel.trim(),
-        email: formData.email.trim(),
-        localidade: formData.localidade.trim(),
-        morada: formData.morada.trim(),
-        area: formData.area || undefined
-      });
-      toast({
-        title: "Cliente criado",
-        description: "O novo cliente foi criado com sucesso",
+        title: "Erro",
+        description: "Erro ao salvar o cliente",
+        variant: "destructive",
       });
     }
-
-    setFormData({ empresa: '', contacto: '', telemovel: '', email: '', localidade: '', morada: '', area: '' });
-    setEditingCliente(null);
-    setIsOpen(false);
   };
 
   const handleEdit = (cliente: Cliente) => {
@@ -88,11 +97,20 @@ export function ClientesSection() {
   };
 
   const handleDelete = (clienteId: string) => {
-    eliminarCliente(clienteId);
-    toast({
-      title: "Cliente eliminado",
-      description: "O cliente foi eliminado com sucesso",
-    });
+    try {
+      eliminarCliente(clienteId);
+      toast({
+        title: "Cliente eliminado",
+        description: "O cliente foi eliminado com sucesso",
+      });
+    } catch (error) {
+      console.error('Erro ao eliminar cliente:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao eliminar o cliente",
+        variant: "destructive",
+      });
+    }
   };
 
   const resetForm = () => {
@@ -114,7 +132,7 @@ export function ClientesSection() {
           if (!open) resetForm();
         }}>
           <DialogTrigger asChild>
-            <Button>
+            <Button onClick={() => console.log('Novo Cliente clicked')}>
               <Plus className="mr-2 h-4 w-4" />
               Novo Cliente
             </Button>

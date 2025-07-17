@@ -5,12 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Trash2, Edit, CheckCircle, Clock, Building } from 'lucide-react';
+import { Plus, Trash2, Edit, CheckCircle, Clock } from 'lucide-react';
 import { Tarefa } from '@/types';
 
 export function TarefasSection() {
@@ -37,33 +36,42 @@ export function TarefasSection() {
       return;
     }
 
-    if (editingTarefa) {
-      atualizarTarefa(editingTarefa.id, {
-        cliente: formData.cliente.trim(),
-        assunto: formData.assunto.trim(),
-        proposta: formData.proposta.trim(),
-        area: formData.area || undefined
-      });
+    try {
+      if (editingTarefa) {
+        atualizarTarefa(editingTarefa.id, {
+          cliente: formData.cliente.trim(),
+          assunto: formData.assunto.trim(),
+          proposta: formData.proposta.trim(),
+          area: formData.area || undefined
+        });
+        toast({
+          title: "Tarefa atualizada",
+          description: "A tarefa foi atualizada com sucesso",
+        });
+      } else {
+        adicionarTarefa({
+          cliente: formData.cliente.trim(),
+          assunto: formData.assunto.trim(),
+          proposta: formData.proposta.trim(),
+          area: formData.area || undefined
+        });
+        toast({
+          title: "Tarefa criada",
+          description: "A nova tarefa foi criada com sucesso",
+        });
+      }
+
+      setFormData({ cliente: '', assunto: '', proposta: '', area: '' });
+      setEditingTarefa(null);
+      setIsOpen(false);
+    } catch (error) {
+      console.error('Erro ao salvar tarefa:', error);
       toast({
-        title: "Tarefa atualizada",
-        description: "A tarefa foi atualizada com sucesso",
-      });
-    } else {
-      adicionarTarefa({
-        cliente: formData.cliente.trim(),
-        assunto: formData.assunto.trim(),
-        proposta: formData.proposta.trim(),
-        area: formData.area || undefined
-      });
-      toast({
-        title: "Tarefa criada",
-        description: "A nova tarefa foi criada com sucesso",
+        title: "Erro",
+        description: "Erro ao salvar a tarefa",
+        variant: "destructive",
       });
     }
-
-    setFormData({ cliente: '', assunto: '', proposta: '', area: '' });
-    setEditingTarefa(null);
-    setIsOpen(false);
   };
 
   const handleEdit = (tarefa: Tarefa) => {
@@ -78,19 +86,37 @@ export function TarefasSection() {
   };
 
   const handleDelete = (tarefaId: string) => {
-    eliminarTarefa(tarefaId);
-    toast({
-      title: "Tarefa eliminada",
-      description: "A tarefa foi eliminada com sucesso",
-    });
+    try {
+      eliminarTarefa(tarefaId);
+      toast({
+        title: "Tarefa eliminada",
+        description: "A tarefa foi eliminada com sucesso",
+      });
+    } catch (error) {
+      console.error('Erro ao eliminar tarefa:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao eliminar a tarefa",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleToggleComplete = (tarefaId: string, concluida: boolean) => {
-    atualizarTarefa(tarefaId, { concluida });
-    toast({
-      title: concluida ? "Tarefa concluída" : "Tarefa reaberta",
-      description: concluida ? "A tarefa foi marcada como concluída" : "A tarefa foi reaberta",
-    });
+    try {
+      atualizarTarefa(tarefaId, { concluida });
+      toast({
+        title: concluida ? "Tarefa concluída" : "Tarefa reaberta",
+        description: concluida ? "A tarefa foi marcada como concluída" : "A tarefa foi reaberta",
+      });
+    } catch (error) {
+      console.error('Erro ao atualizar tarefa:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao atualizar a tarefa",
+        variant: "destructive",
+      });
+    }
   };
 
   const resetForm = () => {
@@ -115,7 +141,7 @@ export function TarefasSection() {
           if (!open) resetForm();
         }}>
           <DialogTrigger asChild>
-            <Button>
+            <Button onClick={() => console.log('Nova Tarefa clicked')}>
               <Plus className="mr-2 h-4 w-4" />
               Nova Tarefa
             </Button>
