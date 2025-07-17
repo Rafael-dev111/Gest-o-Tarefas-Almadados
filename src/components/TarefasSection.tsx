@@ -190,8 +190,8 @@ export function TarefasSection() {
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione uma área" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">Sem área</SelectItem>
+                   <SelectContent>
+                     <SelectItem value="sem-area">Sem área</SelectItem>
                     {areas.map((area) => (
                       <SelectItem key={area.id} value={area.nome}>
                         {area.nome}
