@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Seguimento } from '../types';
-import { Plus, Calendar, MessageSquare, Phone, Mail, User, MoreHorizontal } from 'lucide-react';
+import { Plus, Calendar, MessageSquare, Phone, Mail, User, MoreHorizontal, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface SeguimentoManagerProps {
   seguimentos: Seguimento[];
@@ -21,6 +21,7 @@ export function SeguimentoManager({ seguimentos, onAddSeguimento }: SeguimentoMa
     tipo: 'outro' as const,
   });
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [seguimentosExpanded, setSeguimentosExpanded] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,10 +66,41 @@ export function SeguimentoManager({ seguimentos, onAddSeguimento }: SeguimentoMa
     }
   };
 
+  // Ordenar seguimentos por data (mais recente primeiro) e adicionar numeração
+  const seguimentosOrdenados = seguimentos
+    .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())
+    .map((seguimento, index) => ({
+      ...seguimento,
+      numero: seguimentos.length - index
+    }));
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h4 className="font-medium text-gray-900">Seguimentos ({seguimentos.length})</h4>
+        <div className="flex items-center space-x-4">
+          <h4 className="font-medium text-gray-900">Seguimentos ({seguimentos.length})</h4>
+          {seguimentos.length > 0 && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setSeguimentosExpanded(!seguimentosExpanded)}
+              className="text-sm text-gray-600 hover:text-gray-900"
+            >
+              {seguimentosExpanded ? (
+                <>
+                  <ChevronUp size={16} className="mr-1" />
+                  Ocultar seguimentos
+                </>
+              ) : (
+                <>
+                  <ChevronDown size={16} className="mr-1" />
+                  Ver seguimentos
+                </>
+              )}
+            </Button>
+          )}
+        </div>
         <Button
           type="button"
           variant="outline"
@@ -140,25 +172,26 @@ export function SeguimentoManager({ seguimentos, onAddSeguimento }: SeguimentoMa
         </Card>
       )}
 
-      {seguimentos.length > 0 && (
+      {seguimentosExpanded && seguimentos.length > 0 && (
         <div className="space-y-3">
-          {seguimentos
-            .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())
-            .map((seguimento) => (
-              <div key={seguimento.id} className="border rounded-lg p-3 bg-gray-50">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center space-x-2">
-                    {getTipoIcon(seguimento.tipo)}
-                    <span className="font-medium text-sm">{getTipoLabel(seguimento.tipo)}</span>
-                  </div>
-                  <div className="flex items-center space-x-1 text-xs text-gray-500">
-                    <Calendar size={12} />
-                    <span>{new Date(seguimento.data).toLocaleDateString('pt-PT')}</span>
-                  </div>
+          {seguimentosOrdenados.map((seguimento) => (
+            <div key={seguimento.id} className="border rounded-lg p-3 bg-gray-50">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center space-x-2">
+                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">
+                    Seguimento {seguimento.numero}
+                  </span>
+                  {getTipoIcon(seguimento.tipo)}
+                  <span className="font-medium text-sm">{getTipoLabel(seguimento.tipo)}</span>
                 </div>
-                <p className="text-sm text-gray-700">{seguimento.detalhes}</p>
+                <div className="flex items-center space-x-1 text-xs text-gray-500">
+                  <Calendar size={12} />
+                  <span>{new Date(seguimento.data).toLocaleDateString('pt-PT')}</span>
+                </div>
               </div>
-            ))}
+              <p className="text-sm text-gray-700">{seguimento.detalhes}</p>
+            </div>
+          ))}
         </div>
       )}
 
