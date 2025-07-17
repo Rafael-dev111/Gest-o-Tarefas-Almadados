@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Cliente } from '../types';
 import { Edit2, Trash2 } from 'lucide-react';
@@ -17,6 +18,7 @@ export function ClientesSection() {
     email: '',
     localidade: '',
     morada: '',
+    area: '',
   });
   const [expandedClient, setExpandedClient] = useState<string | null>(null);
   
@@ -29,9 +31,10 @@ export function ClientesSection() {
     email: '',
     localidade: '',
     morada: '',
+    area: '',
   });
   
-  const { clientes, tarefas, propostas, adicionarCliente, atualizarCliente, eliminarCliente } = useLocalStorage();
+  const { clientes, tarefas, propostas, areas, adicionarCliente, atualizarCliente, eliminarCliente } = useLocalStorage();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +50,7 @@ export function ClientesSection() {
       email: '',
       localidade: '',
       morada: '',
+      area: '',
     });
   };
 
@@ -78,6 +82,7 @@ export function ClientesSection() {
       email: cliente.email,
       localidade: cliente.localidade,
       morada: cliente.morada,
+      area: cliente.area || '',
     });
   };
 
@@ -94,6 +99,7 @@ export function ClientesSection() {
       email: '',
       localidade: '',
       morada: '',
+      area: '',
     });
   };
 
@@ -106,6 +112,7 @@ export function ClientesSection() {
       email: '',
       localidade: '',
       morada: '',
+      area: '',
     });
   };
 
@@ -184,6 +191,22 @@ export function ClientesSection() {
                   placeholder="Morada"
                 />
               </div>
+            </div>
+
+            <div>
+              <Label htmlFor="cli-area">Área</Label>
+              <Select value={clienteData.area} onValueChange={(value) => setClienteData({...clienteData, area: value})}>
+                <SelectTrigger id="cli-area">
+                  <SelectValue placeholder="Selecione uma área" />
+                </SelectTrigger>
+                <SelectContent>
+                  {areas.map((area) => (
+                    <SelectItem key={area.id} value={area.nome}>
+                      {area.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <Button type="submit" className="w-full">

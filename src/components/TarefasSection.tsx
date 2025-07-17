@@ -17,6 +17,7 @@ export function TarefasSection() {
   const [assunto, setAssunto] = useState('');
   const [proposta, setProposta] = useState('');
   const [propostaVinculada, setPropostaVinculada] = useState('');
+  const [area, setArea] = useState('');
   
   // Estados para edição
   const [editandoTarefa, setEditandoTarefa] = useState<Tarefa | null>(null);
@@ -24,8 +25,9 @@ export function TarefasSection() {
   const [editAssunto, setEditAssunto] = useState('');
   const [editProposta, setEditProposta] = useState('');
   const [editPropostaVinculada, setEditPropostaVinculada] = useState('');
+  const [editArea, setEditArea] = useState('');
   
-  const { tarefas, propostas, adicionarTarefa, atualizarTarefa, eliminarTarefa, buscarOuCriarCliente } = useLocalStorage();
+  const { tarefas, propostas, areas, adicionarTarefa, atualizarTarefa, eliminarTarefa, buscarOuCriarCliente } = useLocalStorage();
 
   // Filtrar tarefas por status
   const tarefasPendentes = tarefas.filter(tarefa => !tarefa.concluida);
@@ -54,12 +56,14 @@ export function TarefasSection() {
       cliente,
       assunto,
       proposta: propostaTexto || undefined,
+      area: area || undefined,
     });
 
     setCliente('');
     setAssunto('');
     setProposta('');
     setPropostaVinculada('');
+    setArea('');
   };
 
   const toggleTarefa = (id: string, concluida: boolean) => {
@@ -72,6 +76,7 @@ export function TarefasSection() {
     setEditAssunto(tarefa.assunto);
     setEditProposta(tarefa.proposta || '');
     setEditPropostaVinculada('');
+    setEditArea(tarefa.area || '');
   };
 
   const salvarEdicao = () => {
@@ -91,6 +96,7 @@ export function TarefasSection() {
       cliente: editCliente,
       assunto: editAssunto,
       proposta: propostaTexto || undefined,
+      area: editArea || undefined,
     });
 
     setEditandoTarefa(null);
@@ -98,6 +104,7 @@ export function TarefasSection() {
     setEditAssunto('');
     setEditProposta('');
     setEditPropostaVinculada('');
+    setEditArea('');
   };
 
   const cancelarEdicao = () => {
@@ -106,6 +113,7 @@ export function TarefasSection() {
     setEditAssunto('');
     setEditProposta('');
     setEditPropostaVinculada('');
+    setEditArea('');
   };
 
   const handleEliminarTarefa = (id: string) => {
@@ -184,23 +192,39 @@ export function TarefasSection() {
                          />
                        </div>
                        
-                       {editCliente && propostasDoClienteEdit.length > 0 && (
-                         <div>
-                           <Label htmlFor="edit-proposta-vinculada">Ou vincular a uma proposta existente</Label>
-                           <Select value={editPropostaVinculada} onValueChange={setEditPropostaVinculada}>
-                             <SelectTrigger id="edit-proposta-vinculada">
-                               <SelectValue placeholder="Selecione uma proposta existente" />
-                             </SelectTrigger>
-                             <SelectContent>
-                               {propostasDoClienteEdit.map((prop) => (
-                                 <SelectItem key={prop.id} value={prop.id}>
-                                   Proposta #{prop.numeracao} - {prop.assunto}
-                                 </SelectItem>
-                               ))}
-                             </SelectContent>
-                           </Select>
-                         </div>
-                       )}
+                        {editCliente && propostasDoClienteEdit.length > 0 && (
+                          <div>
+                            <Label htmlFor="edit-proposta-vinculada">Ou vincular a uma proposta existente</Label>
+                            <Select value={editPropostaVinculada} onValueChange={setEditPropostaVinculada}>
+                              <SelectTrigger id="edit-proposta-vinculada">
+                                <SelectValue placeholder="Selecione uma proposta existente" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {propostasDoClienteEdit.map((prop) => (
+                                  <SelectItem key={prop.id} value={prop.id}>
+                                    Proposta #{prop.numeracao} - {prop.assunto}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+
+                        <div>
+                          <Label htmlFor="edit-area">Área</Label>
+                          <Select value={editArea} onValueChange={setEditArea}>
+                            <SelectTrigger id="edit-area">
+                              <SelectValue placeholder="Selecione uma área" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {areas.map((area) => (
+                                <SelectItem key={area.id} value={area.nome}>
+                                  {area.nome}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                        
                        <div className="flex space-x-2">
                          <Button onClick={salvarEdicao} className="flex-1">
@@ -241,11 +265,16 @@ export function TarefasSection() {
            <p className="text-sm text-gray-600 mb-1">
              <strong>Cliente:</strong> {tarefa.cliente}
            </p>
-           {tarefa.proposta && (
-             <p className="text-sm text-gray-600">
-               <strong>Proposta:</strong> {tarefa.proposta}
-             </p>
-           )}
+            {tarefa.proposta && (
+              <p className="text-sm text-gray-600 mb-1">
+                <strong>Proposta:</strong> {tarefa.proposta}
+              </p>
+            )}
+            {tarefa.area && (
+              <p className="text-sm text-gray-600">
+                <strong>Área:</strong> {tarefa.area}
+              </p>
+            )}
          </div>
       </div>
     </div>
@@ -306,6 +335,22 @@ export function TarefasSection() {
                 </Select>
               </div>
             )}
+
+            <div>
+              <Label htmlFor="area">Área</Label>
+              <Select value={area} onValueChange={setArea}>
+                <SelectTrigger id="area">
+                  <SelectValue placeholder="Selecione uma área" />
+                </SelectTrigger>
+                <SelectContent>
+                  {areas.map((area) => (
+                    <SelectItem key={area.id} value={area.nome}>
+                      {area.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             
             <Button type="submit" className="w-full">
               Adicionar Tarefa

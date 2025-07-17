@@ -23,12 +23,14 @@ export function PropostasSection() {
   });
   const [assunto, setAssunto] = useState('');
   const [seguimento, setSeguimento] = useState('');
+  const [area, setArea] = useState('');
   const [editingProposta, setEditingProposta] = useState<string | null>(null);
   const [editingSeguimento, setEditingSeguimento] = useState('');
   const [editingSituacao, setEditingSituacao] = useState<'pendente' | 'sem-interesse' | 'final'>('pendente');
   const [editingDetalhes, setEditingDetalhes] = useState('');
+  const [editingArea, setEditingArea] = useState('');
   
-  const { propostas, adicionarProposta, atualizarProposta, eliminarProposta, buscarOuCriarCliente } = useLocalStorage();
+  const { propostas, areas, adicionarProposta, atualizarProposta, eliminarProposta, buscarOuCriarCliente } = useLocalStorage();
 
   // Filtrar propostas por situação
   const propostasPendentes = propostas.filter(proposta => proposta.situacao === 'pendente');
@@ -49,13 +51,14 @@ export function PropostasSection() {
         ...clienteData,
       };
       
-      adicionarProposta({
-        dataCreacao,
-        cliente: clienteCompleto,
-        assunto,
-        seguimento: seguimento ? [seguimento] : [],
-        situacao: 'pendente',
-      });
+    adicionarProposta({
+      dataCreacao,
+      cliente: clienteCompleto,
+      assunto,
+      seguimento: seguimento ? [seguimento] : [],
+      situacao: 'pendente',
+      area: area || undefined,
+    });
     } else {
       adicionarProposta({
         dataCreacao,
@@ -63,6 +66,7 @@ export function PropostasSection() {
         assunto,
         seguimento: seguimento ? [seguimento] : [],
         situacao: 'pendente',
+        area: area || undefined,
       });
     }
 
@@ -77,6 +81,7 @@ export function PropostasSection() {
     });
     setAssunto('');
     setSeguimento('');
+    setArea('');
     setDataCreacao(new Date().toISOString().split('T')[0]);
   };
 
@@ -85,6 +90,7 @@ export function PropostasSection() {
     setEditingSeguimento(proposta.seguimento.join('\n'));
     setEditingSituacao(proposta.situacao);
     setEditingDetalhes(proposta.detalhesPendente || '');
+    setEditingArea(proposta.area || '');
   };
 
   const handleSaveEdit = (id: string) => {
@@ -92,10 +98,12 @@ export function PropostasSection() {
       seguimento: editingSeguimento.split('\n').filter(s => s.trim()),
       situacao: editingSituacao,
       detalhesPendente: editingDetalhes || undefined,
+      area: editingArea || undefined,
     });
     setEditingProposta(null);
     setEditingSeguimento('');
     setEditingDetalhes('');
+    setEditingArea('');
   };
 
   const handleEliminarProposta = (id: string) => {
@@ -221,6 +229,22 @@ export function PropostasSection() {
               />
             </div>
 
+            <div>
+              <Label htmlFor="prop-area">Área</Label>
+              <Select value={area} onValueChange={setArea}>
+                <SelectTrigger id="prop-area">
+                  <SelectValue placeholder="Selecione uma área" />
+                </SelectTrigger>
+                <SelectContent>
+                  {areas.map((area) => (
+                    <SelectItem key={area.id} value={area.nome}>
+                      {area.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <Button type="submit" className="w-full">
               Adicionar Proposta
             </Button>
@@ -283,6 +307,11 @@ export function PropostasSection() {
                           <p className="text-sm text-gray-600">
                             <strong>Data:</strong> {new Date(proposta.dataCreacao).toLocaleDateString('pt-PT')}
                           </p>
+                          {proposta.area && (
+                            <p className="text-sm text-gray-600">
+                              <strong>Área:</strong> {proposta.area}
+                            </p>
+                          )}
                         </div>
                         <div className="flex items-center space-x-2">
                           <span className={`px-2 py-1 rounded text-xs font-medium border ${getSituacaoColor(proposta.situacao)}`}>
@@ -355,6 +384,21 @@ export function PropostasSection() {
                               />
                             </div>
                           )}
+                          <div>
+                            <Label>Área</Label>
+                            <Select value={editingArea} onValueChange={setEditingArea}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione uma área" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {areas.map((area) => (
+                                  <SelectItem key={area.id} value={area.nome}>
+                                    {area.nome}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
                           <div className="flex space-x-2">
                             <Button onClick={() => handleSaveEdit(proposta.id)}>
                               Salvar

@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Cliente, Tarefa, Proposta } from '../types';
+import { Cliente, Tarefa, Proposta, Area } from '../types';
 
 export function useLocalStorage() {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [tarefas, setTarefas] = useState<Tarefa[]>([]);
   const [propostas, setPropostas] = useState<Proposta[]>([]);
+  const [areas, setAreas] = useState<Area[]>([]);
 
   // Carregar dados do localStorage
   useEffect(() => {
     const clientesArmazenados = localStorage.getItem('almadados-clientes');
     const tarefasArmazenadas = localStorage.getItem('almadados-tarefas');
     const propostasArmazenadas = localStorage.getItem('almadados-propostas');
+    const areasArmazenadas = localStorage.getItem('almadados-areas');
 
     if (clientesArmazenados) {
       setClientes(JSON.parse(clientesArmazenados));
@@ -20,6 +22,9 @@ export function useLocalStorage() {
     }
     if (propostasArmazenadas) {
       setPropostas(JSON.parse(propostasArmazenadas));
+    }
+    if (areasArmazenadas) {
+      setAreas(JSON.parse(areasArmazenadas));
     }
   }, []);
 
@@ -37,6 +42,11 @@ export function useLocalStorage() {
   const salvarPropostas = (novasPropostas: Proposta[]) => {
     setPropostas(novasPropostas);
     localStorage.setItem('almadados-propostas', JSON.stringify(novasPropostas));
+  };
+
+  const salvarAreas = (novasAreas: Area[]) => {
+    setAreas(novasAreas);
+    localStorage.setItem('almadados-areas', JSON.stringify(novasAreas));
   };
 
   // Adicionar entidades
@@ -78,6 +88,16 @@ export function useLocalStorage() {
     return novaProposta;
   };
 
+  const adicionarArea = (area: Omit<Area, 'id' | 'criadaEm'>) => {
+    const novaArea: Area = {
+      ...area,
+      id: Date.now().toString(),
+      criadaEm: new Date().toISOString(),
+    };
+    salvarAreas([...areas, novaArea]);
+    return novaArea;
+  };
+
   // Atualizar entidades
   const atualizarTarefa = (id: string, updates: Partial<Tarefa>) => {
     const tarefasAtualizadas = tarefas.map(tarefa => 
@@ -98,6 +118,13 @@ export function useLocalStorage() {
       cliente.id === id ? { ...cliente, ...updates } : cliente
     );
     salvarClientes(clientesAtualizados);
+  };
+
+  const atualizarArea = (id: string, updates: Partial<Area>) => {
+    const areasAtualizadas = areas.map(area => 
+      area.id === id ? { ...area, ...updates } : area
+    );
+    salvarAreas(areasAtualizadas);
   };
 
   // Buscar cliente por nome ou criar novo
@@ -161,19 +188,28 @@ export function useLocalStorage() {
     salvarPropostas(propostasAtualizadas);
   };
 
+  const eliminarArea = (id: string) => {
+    const areasAtualizadas = areas.filter(area => area.id !== id);
+    salvarAreas(areasAtualizadas);
+  };
+
   return {
     clientes,
     tarefas,
     propostas,
+    areas,
     adicionarCliente,
     adicionarTarefa,
     adicionarProposta,
+    adicionarArea,
     atualizarTarefa,
     atualizarProposta,
     atualizarCliente,
+    atualizarArea,
     eliminarCliente,
     eliminarTarefa,
     eliminarProposta,
+    eliminarArea,
     buscarOuCriarCliente,
     exportarDados,
     importarDados,

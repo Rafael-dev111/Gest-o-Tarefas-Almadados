@@ -10,6 +10,7 @@ export function NavigationTabs({ activeTab, onTabChange }: NavigationTabsProps) 
     { id: 'tarefas', label: 'Tarefas' },
     { id: 'propostas', label: 'Propostas' },
     { id: 'clientes', label: 'Clientes' },
+    { id: 'areas', label: 'Áreas' },
     { id: 'listagens', label: 'Listagens' },
     { id: 'configuracoes', label: 'Configurações' },
   ];

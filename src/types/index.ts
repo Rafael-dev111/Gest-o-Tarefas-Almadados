@@ -1,3 +1,10 @@
+export interface Area {
+  id: string;
+  nome: string;
+  descricao?: string;
+  criadaEm: string;
+}
+
 export interface Cliente {
   id: string;
   empresa: string;
@@ -6,6 +13,7 @@ export interface Cliente {
   email: string;
   localidade: string;
   morada: string;
+  area?: string;
   criadoEm: string;
 }
 
@@ -14,6 +22,7 @@ export interface Tarefa {
   cliente: string;
   assunto: string;
   proposta?: string;
+  area?: string;
   concluida: boolean;
   criadaEm: string;
 }
@@ -27,6 +36,7 @@ export interface Proposta {
   numeracao: number;
   situacao: 'pendente' | 'sem-interesse' | 'final';
   detalhesPendente?: string;
+  area?: string;
   criadaEm: string;
 }
 

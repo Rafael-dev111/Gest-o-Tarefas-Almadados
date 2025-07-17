@@ -3,6 +3,7 @@ import { NavigationTabs } from '../components/NavigationTabs';
 import { TarefasSection } from '../components/TarefasSection';
 import { PropostasSection } from '../components/PropostasSection';
 import { ClientesSection } from '../components/ClientesSection';
+import { AreasSection } from '../components/AreasSection';
 import { ListagensSection } from '../components/ListagensSection';
 import { ConfiguracoesSection } from '../components/ConfiguracoesSection';
 
@@ -17,6 +18,8 @@ export default function AlmadadosApp() {
         return <PropostasSection />;
       case 'clientes':
         return <ClientesSection />;
+      case 'areas':
+        return <AreasSection />;
       case 'listagens':
         return <ListagensSection />;
       case 'configuracoes':
