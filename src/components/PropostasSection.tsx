@@ -151,6 +151,9 @@ export function PropostasSection() {
     }
   };
 
+  // Ordenar propostas por data de criação (mais antigas primeiro)
+  const propostasOrdenadas = [...propostas].sort((a, b) => new Date(a.dataCreacao).getTime() - new Date(b.dataCreacao).getTime());
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -263,7 +266,7 @@ export function PropostasSection() {
       </div>
 
       <div className="grid gap-4">
-        {propostas.map((proposta, index) => (
+        {propostasOrdenadas.map((proposta, index) => (
           <Card key={proposta.id}>
             <CardHeader>
               <div className="flex justify-between items-start">

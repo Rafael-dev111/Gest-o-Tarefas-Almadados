@@ -118,6 +118,9 @@ export function ClientesSection() {
     setEditingCliente(null);
   };
 
+  // Ordenar clientes por data de criação (mais antigos primeiro)
+  const clientesOrdenados = [...clientes].sort((a, b) => new Date(a.criadoEm).getTime() - new Date(b.criadoEm).getTime());
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -132,7 +135,7 @@ export function ClientesSection() {
           if (!open) resetForm();
         }}>
           <DialogTrigger asChild>
-            <Button onClick={() => console.log('Novo Cliente clicked')}>
+            <Button>
               <Plus className="mr-2 h-4 w-4" />
               Novo Cliente
             </Button>
@@ -240,7 +243,7 @@ export function ClientesSection() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {clientes.map((cliente, index) => (
+        {clientesOrdenados.map((cliente, index) => (
           <Card key={cliente.id}>
             <CardHeader>
               <div className="flex justify-between items-start">

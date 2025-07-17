@@ -124,8 +124,10 @@ export function TarefasSection() {
     setEditingTarefa(null);
   };
 
-  const tarefasPendentes = tarefas.filter(t => !t.concluida);
-  const tarefasConcluidas = tarefas.filter(t => t.concluida);
+  // Ordenar tarefas por data de criação (mais antigas primeiro)
+  const tarefasOrdenadas = [...tarefas].sort((a, b) => new Date(a.criadaEm).getTime() - new Date(b.criadaEm).getTime());
+  const tarefasPendentes = tarefasOrdenadas.filter(t => !t.concluida);
+  const tarefasConcluidas = tarefasOrdenadas.filter(t => t.concluida);
 
   return (
     <div className="space-y-6">
@@ -141,7 +143,7 @@ export function TarefasSection() {
           if (!open) resetForm();
         }}>
           <DialogTrigger asChild>
-            <Button onClick={() => console.log('Nova Tarefa clicked')}>
+            <Button>
               <Plus className="mr-2 h-4 w-4" />
               Nova Tarefa
             </Button>

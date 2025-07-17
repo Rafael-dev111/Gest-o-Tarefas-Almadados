@@ -80,6 +80,9 @@ export function AreasSection() {
     setEditingArea(null);
   };
 
+  // Ordenar áreas por data de criação (mais antigas primeiro)
+  const areasOrdenadas = [...areas].sort((a, b) => new Date(a.criadaEm).getTime() - new Date(b.criadaEm).getTime());
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -144,7 +147,7 @@ export function AreasSection() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {areas.map((area, index) => (
+        {areasOrdenadas.map((area, index) => (
           <Card key={area.id}>
             <CardHeader>
               <div className="flex justify-between items-start">
