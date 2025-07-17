@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Printer, FileText } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
+import logoAlmadados from '@/assets/almadados-logo.png';
 
 export function ListagensSection() {
   const [filtroTipo, setFiltroTipo] = useState<'tarefas' | 'propostas' | 'clientes'>('tarefas');
@@ -78,15 +79,131 @@ export function ListagensSection() {
             <head>
               <title>Listagem Almadados</title>
               <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
-                h1 { color: #FF6600; }
-                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                th { background-color: #f2f2f2; }
-                .status-pendente { background-color: #fff3cd; }
-                .status-final { background-color: #d4edda; }
-                .status-sem-interesse { background-color: #f8d7da; }
-                @media print { body { margin: 0; } }
+                @page {
+                  margin: 1.5cm;
+                  size: A4;
+                }
+                body { 
+                  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                  margin: 0; 
+                  padding: 0;
+                  line-height: 1.4;
+                  color: #333;
+                  font-size: 11px;
+                }
+                .header {
+                  border-bottom: 3px solid #FF6600;
+                  padding-bottom: 15px;
+                  margin-bottom: 25px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                }
+                .logo {
+                  max-height: 60px;
+                  width: auto;
+                }
+                .company-info {
+                  text-align: right;
+                  font-size: 10px;
+                  color: #666;
+                }
+                h1 { 
+                  color: #FF6600; 
+                  font-size: 24px;
+                  margin: 0;
+                  font-weight: 600;
+                }
+                h3 {
+                  color: #333;
+                  font-size: 16px;
+                  margin: 20px 0 15px 0;
+                  font-weight: 600;
+                  border-left: 4px solid #FF6600;
+                  padding-left: 10px;
+                }
+                table { 
+                  width: 100%; 
+                  border-collapse: collapse; 
+                  margin: 15px 0 25px 0;
+                  font-size: 10px;
+                  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                }
+                th { 
+                  background: linear-gradient(135deg, #FF6600, #e55a00);
+                  color: white;
+                  padding: 12px 8px;
+                  text-align: left;
+                  font-weight: 600;
+                  font-size: 10px;
+                  border: none;
+                }
+                td { 
+                  border: 1px solid #e0e0e0; 
+                  padding: 10px 8px; 
+                  vertical-align: top;
+                  background: #fff;
+                }
+                tr:nth-child(even) td {
+                  background: #f9f9f9;
+                }
+                tr:hover td {
+                  background: #f0f8ff;
+                }
+                .status-pendente { 
+                  background-color: #fff3cd !important; 
+                  color: #856404;
+                  font-weight: 500;
+                }
+                .status-final { 
+                  background-color: #d4edda !important; 
+                  color: #155724;
+                  font-weight: 500;
+                }
+                .status-sem-interesse { 
+                  background-color: #f8d7da !important; 
+                  color: #721c24;
+                  font-weight: 500;
+                }
+                .bg-green-100 {
+                  background-color: #d4edda !important;
+                  color: #155724;
+                  font-weight: 500;
+                }
+                .bg-yellow-100 {
+                  background-color: #fff3cd !important;
+                  color: #856404;
+                  font-weight: 500;
+                }
+                .bg-red-100 {
+                  background-color: #f8d7da !important;
+                  color: #721c24;
+                  font-weight: 500;
+                }
+                .metadata {
+                  text-align: center;
+                  font-size: 9px;
+                  color: #666;
+                  margin-top: 20px;
+                  padding-top: 15px;
+                  border-top: 1px solid #ddd;
+                }
+                .total-registos {
+                  background: #f8f9fa;
+                  padding: 8px 12px;
+                  border-radius: 4px;
+                  margin: 15px 0;
+                  font-weight: 600;
+                  color: #495057;
+                  border-left: 4px solid #28a745;
+                }
+                @media print { 
+                  body { margin: 0; }
+                  .header { break-inside: avoid; }
+                  table { break-inside: avoid; }
+                  tr { break-inside: avoid; }
+                  h3 { break-after: avoid; }
+                }
               </style>
             </head>
             <body>
@@ -105,11 +222,21 @@ export function ListagensSection() {
     const conteudo = document.getElementById('conteudo-impressao');
     if (conteudo) {
       const opt = {
-        margin: 1,
+        margin: [0.5, 0.5, 0.5, 0.5],
         filename: `almadados_${filtroTipo}_${new Date().toLocaleDateString('pt-PT').replace(/\//g, '-')}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff'
+        },
+        jsPDF: { 
+          unit: 'in', 
+          format: 'a4', 
+          orientation: 'portrait',
+          compress: true
+        }
       };
       
       html2pdf().from(conteudo).set(opt).save();
@@ -119,33 +246,33 @@ export function ListagensSection() {
   const renderTarefas = () => (
     <div>
       <h3 className="text-lg font-medium mb-4">
-        Tarefas {filtroStatus === 'pendentes' ? 'Pendentes' : filtroStatus === 'finalizadas' ? 'Finalizadas' : ''}
+        📋 Tarefas {filtroStatus === 'pendentes' ? 'Pendentes' : filtroStatus === 'finalizadas' ? 'Finalizadas' : ''}
       </h3>
       <div className="overflow-x-auto">
         <table className="w-full border-collapse border border-gray-300">
           <thead>
-            <tr className="bg-gray-50">
-              <th className="border border-gray-300 p-2 text-left">#</th>
-              <th className="border border-gray-300 p-2 text-left">Cliente</th>
-              <th className="border border-gray-300 p-2 text-left">Assunto</th>
-              <th className="border border-gray-300 p-2 text-left">Data</th>
-              <th className="border border-gray-300 p-2 text-left">Status</th>
-              <th className="border border-gray-300 p-2 text-left">Proposta</th>
+            <tr className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+              <th className="border border-gray-300 p-3 text-left w-12">#</th>
+              <th className="border border-gray-300 p-3 text-left w-1/4">Cliente</th>
+              <th className="border border-gray-300 p-3 text-left w-2/5">Assunto</th>
+              <th className="border border-gray-300 p-3 text-left w-20">Data</th>
+              <th className="border border-gray-300 p-3 text-left w-20">Status</th>
+              <th className="border border-gray-300 p-3 text-left w-20">Proposta</th>
             </tr>
           </thead>
           <tbody>
             {dadosFiltrados.map((tarefa: any, index: number) => (
-              <tr key={tarefa.id}>
-                <td className="border border-gray-300 p-2 font-medium">#{index + 1}</td>
-                <td className="border border-gray-300 p-2">{tarefa.cliente}</td>
-                <td className="border border-gray-300 p-2">{tarefa.assunto}</td>
-                <td className="border border-gray-300 p-2">
+              <tr key={tarefa.id} className="hover:bg-gray-50">
+                <td className="border border-gray-300 p-3 font-bold text-center">#{index + 1}</td>
+                <td className="border border-gray-300 p-3 font-medium">{tarefa.cliente}</td>
+                <td className="border border-gray-300 p-3">{tarefa.assunto}</td>
+                <td className="border border-gray-300 p-3 text-center">
                   {new Date(tarefa.criadaEm).toLocaleDateString('pt-PT')}
                 </td>
-                <td className={`border border-gray-300 p-2 ${tarefa.concluida ? 'bg-green-100' : 'bg-yellow-100'}`}>
-                  {tarefa.concluida ? 'Concluída' : 'Pendente'}
+                <td className={`border border-gray-300 p-3 text-center font-medium ${tarefa.concluida ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                  {tarefa.concluida ? '✅ Concluída' : '⏳ Pendente'}
                 </td>
-                <td className="border border-gray-300 p-2">{tarefa.proposta || '-'}</td>
+                <td className="border border-gray-300 p-3 text-center">{tarefa.proposta || '-'}</td>
               </tr>
             ))}
           </tbody>
@@ -157,41 +284,41 @@ export function ListagensSection() {
   const renderPropostas = () => (
     <div>
       <h3 className="text-lg font-medium mb-4">
-        Propostas {filtroStatus === 'pendentes' ? 'Pendentes' : filtroStatus === 'finalizadas' ? 'Finalizadas' : ''}
+        💼 Propostas {filtroStatus === 'pendentes' ? 'Pendentes' : filtroStatus === 'finalizadas' ? 'Finalizadas' : ''}
         {dataInicio && dataFim && ` (${new Date(dataInicio).toLocaleDateString('pt-PT')} - ${new Date(dataFim).toLocaleDateString('pt-PT')})`}
       </h3>
       <div className="overflow-x-auto">
         <table className="w-full border-collapse border border-gray-300">
           <thead>
-            <tr className="bg-gray-50">
-              <th className="border border-gray-300 p-2 text-left">#</th>
-              <th className="border border-gray-300 p-2 text-left">Proposta</th>
-              <th className="border border-gray-300 p-2 text-left">Cliente</th>
-              <th className="border border-gray-300 p-2 text-left">Assunto</th>
-              <th className="border border-gray-300 p-2 text-left">Data</th>
-              <th className="border border-gray-300 p-2 text-left">Situação</th>
-              <th className="border border-gray-300 p-2 text-left">Seguimento</th>
+            <tr className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+              <th className="border border-gray-300 p-3 text-left w-12">#</th>
+              <th className="border border-gray-300 p-3 text-left w-20">Nº Prop.</th>
+              <th className="border border-gray-300 p-3 text-left w-1/5">Cliente</th>
+              <th className="border border-gray-300 p-3 text-left w-1/3">Assunto</th>
+              <th className="border border-gray-300 p-3 text-left w-20">Data</th>
+              <th className="border border-gray-300 p-3 text-left w-24">Situação</th>
+              <th className="border border-gray-300 p-3 text-left">Seguimento</th>
             </tr>
           </thead>
           <tbody>
             {dadosFiltrados.map((proposta: any, index: number) => (
-              <tr key={proposta.id}>
-                <td className="border border-gray-300 p-2 font-medium">#{index + 1}</td>
-                <td className="border border-gray-300 p-2">#{proposta.numeracao}</td>
-                <td className="border border-gray-300 p-2">{proposta.cliente.empresa}</td>
-                <td className="border border-gray-300 p-2">{proposta.assunto}</td>
-                <td className="border border-gray-300 p-2">
+              <tr key={proposta.id} className="hover:bg-gray-50">
+                <td className="border border-gray-300 p-3 font-bold text-center">#{index + 1}</td>
+                <td className="border border-gray-300 p-3 font-mono text-center">#{proposta.numeracao}</td>
+                <td className="border border-gray-300 p-3 font-medium">{proposta.cliente.empresa}</td>
+                <td className="border border-gray-300 p-3">{proposta.assunto}</td>
+                <td className="border border-gray-300 p-3 text-center">
                   {new Date(proposta.dataCreacao).toLocaleDateString('pt-PT')}
                 </td>
-                <td className={`border border-gray-300 p-2 ${
-                  proposta.situacao === 'pendente' ? 'bg-yellow-100' : 
-                  proposta.situacao === 'final' ? 'bg-green-100' : 'bg-red-100'
+                <td className={`border border-gray-300 p-3 text-center font-medium ${
+                  proposta.situacao === 'pendente' ? 'bg-yellow-100 text-yellow-800' : 
+                  proposta.situacao === 'final' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}>
-                  {proposta.situacao === 'pendente' ? 'Pendente' : 
-                   proposta.situacao === 'sem-interesse' ? 'Sem Interesse' : 'Final'}
+                  {proposta.situacao === 'pendente' ? '⏳ Pendente' : 
+                   proposta.situacao === 'sem-interesse' ? '❌ Sem Interesse' : '✅ Final'}
                 </td>
-                <td className="border border-gray-300 p-2">
-                  {proposta.seguimento.length > 0 ? proposta.seguimento.join('; ') : '-'}
+                <td className="border border-gray-300 p-3 text-sm">
+                  {proposta.seguimento.length > 0 ? proposta.seguimento.slice(0, 2).join('; ') + (proposta.seguimento.length > 2 ? '...' : '') : '-'}
                 </td>
               </tr>
             ))}
@@ -204,19 +331,19 @@ export function ListagensSection() {
   const renderClientes = () => (
     <div>
       <h3 className="text-lg font-medium mb-4">
-        Clientes {dataInicio && dataFim && `com Propostas (${new Date(dataInicio).toLocaleDateString('pt-PT')} - ${new Date(dataFim).toLocaleDateString('pt-PT')})`}
+        👥 Clientes {dataInicio && dataFim && `com Propostas (${new Date(dataInicio).toLocaleDateString('pt-PT')} - ${new Date(dataFim).toLocaleDateString('pt-PT')})`}
       </h3>
       <div className="overflow-x-auto">
         <table className="w-full border-collapse border border-gray-300">
           <thead>
-            <tr className="bg-gray-50">
-              <th className="border border-gray-300 p-2 text-left">#</th>
-              <th className="border border-gray-300 p-2 text-left">Empresa</th>
-              <th className="border border-gray-300 p-2 text-left">Contacto</th>
-              <th className="border border-gray-300 p-2 text-left">Telemóvel</th>
-              <th className="border border-gray-300 p-2 text-left">Email</th>
-              <th className="border border-gray-300 p-2 text-left">Localidade</th>
-              <th className="border border-gray-300 p-2 text-left">Tempo de Negociação</th>
+            <tr className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+              <th className="border border-gray-300 p-3 text-left w-12">#</th>
+              <th className="border border-gray-300 p-3 text-left w-1/4">Empresa</th>
+              <th className="border border-gray-300 p-3 text-left w-1/6">Contacto</th>
+              <th className="border border-gray-300 p-3 text-left w-24">Telemóvel</th>
+              <th className="border border-gray-300 p-3 text-left w-1/5">Email</th>
+              <th className="border border-gray-300 p-3 text-left w-24">Localidade</th>
+              <th className="border border-gray-300 p-3 text-left w-28">Tempo Negoc.</th>
             </tr>
           </thead>
           <tbody>
@@ -228,15 +355,23 @@ export function ListagensSection() {
                 Math.floor((Date.now() - primeiraPropostaData.getTime()) / (1000 * 60 * 60 * 24)) : 0;
               
               return (
-                <tr key={cliente.id}>
-                  <td className="border border-gray-300 p-2 font-medium">#{index + 1}</td>
-                  <td className="border border-gray-300 p-2">{cliente.empresa}</td>
-                  <td className="border border-gray-300 p-2">{cliente.contacto || '-'}</td>
-                  <td className="border border-gray-300 p-2">{cliente.telemovel || '-'}</td>
-                  <td className="border border-gray-300 p-2">{cliente.email || '-'}</td>
-                  <td className="border border-gray-300 p-2">{cliente.localidade || '-'}</td>
-                  <td className="border border-gray-300 p-2">
-                    {tempoNegociacao > 0 ? `${tempoNegociacao} dias` : '-'}
+                <tr key={cliente.id} className="hover:bg-gray-50">
+                  <td className="border border-gray-300 p-3 font-bold text-center">#{index + 1}</td>
+                  <td className="border border-gray-300 p-3 font-medium">{cliente.empresa}</td>
+                  <td className="border border-gray-300 p-3">{cliente.contacto || '-'}</td>
+                  <td className="border border-gray-300 p-3 text-center">{cliente.telemovel || '-'}</td>
+                  <td className="border border-gray-300 p-3 text-sm">{cliente.email || '-'}</td>
+                  <td className="border border-gray-300 p-3 text-center">{cliente.localidade || '-'}</td>
+                  <td className="border border-gray-300 p-3 text-center font-medium">
+                    {tempoNegociacao > 0 ? (
+                      <span className={`px-2 py-1 rounded text-xs ${
+                        tempoNegociacao > 90 ? 'bg-red-100 text-red-800' :
+                        tempoNegociacao > 30 ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-green-100 text-green-800'
+                      }`}>
+                        {tempoNegociacao} dias
+                      </span>
+                    ) : '-'}
                   </td>
                 </tr>
               );
@@ -328,11 +463,34 @@ export function ListagensSection() {
         </CardHeader>
         <CardContent>
           <div id="conteudo-impressao">
-            <div className="mb-4">
-              <h1 className="text-2xl font-bold text-primary mb-2">Gestão de Tarefas - Almadados</h1>
-              <p className="text-gray-600">
-                Listagem gerada em {new Date().toLocaleDateString('pt-PT')} às {new Date().toLocaleTimeString('pt-PT')}
-              </p>
+            <div className="header mb-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <img src={logoAlmadados} alt="Almadados Logo" className="logo h-16 w-auto" />
+                  <div>
+                    <h1 className="text-2xl font-bold text-primary mb-1">Sistema de Gestão - Almadados</h1>
+                    <p className="text-sm text-gray-600">
+                      Relatório de {filtroTipo === 'tarefas' ? 'Tarefas' : filtroTipo === 'propostas' ? 'Propostas' : 'Clientes'}
+                    </p>
+                  </div>
+                </div>
+                <div className="company-info text-right">
+                  <div className="text-xs text-gray-500">
+                    <div>Data: {new Date().toLocaleDateString('pt-PT')}</div>
+                    <div>Hora: {new Date().toLocaleTimeString('pt-PT')}</div>
+                    <div className="mt-2 font-semibold">www.almadados.pt</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="total-registos">
+              <strong>Total de registos encontrados: {dadosFiltrados.length}</strong>
+              {dataInicio && dataFim && (
+                <span className="ml-4 text-sm">
+                  Período: {new Date(dataInicio).toLocaleDateString('pt-PT')} - {new Date(dataFim).toLocaleDateString('pt-PT')}
+                </span>
+              )}
             </div>
             
             {dadosFiltrados.length === 0 ? (
@@ -344,6 +502,11 @@ export function ListagensSection() {
                 {filtroTipo === 'clientes' && renderClientes()}
               </>
             )}
+            
+            <div className="metadata">
+              <p>Documento gerado automaticamente pelo Sistema de Gestão Almadados</p>
+              <p>© {new Date().getFullYear()} Almadados - Todos os direitos reservados</p>
+            </div>
           </div>
         </CardContent>
       </Card>
