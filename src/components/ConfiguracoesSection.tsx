@@ -63,6 +63,7 @@ export function ConfiguracoesSection() {
         localStorage.removeItem('almadados-clientes');
         localStorage.removeItem('almadados-tarefas');
         localStorage.removeItem('almadados-propostas');
+        localStorage.removeItem('almadados-areas');
         window.location.reload();
       }
     } else if (senha !== null) {
