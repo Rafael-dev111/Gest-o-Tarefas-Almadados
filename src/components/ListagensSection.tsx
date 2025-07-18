@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Printer, FileText } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
-import logoAlmadados from '@/assets/almadados-logo.png';
+import logoAlmadados from '@/assets/almadados-empresa.jpg';
 
 export function ListagensSection() {
   const [filtroTipo, setFiltroTipo] = useState<'tarefas' | 'propostas' | 'clientes'>('tarefas');
@@ -93,20 +93,21 @@ export function ListagensSection() {
                 }
                 .header {
                   border-bottom: 3px solid #FF6600;
-                  padding-bottom: 15px;
-                  margin-bottom: 25px;
+                  padding-bottom: 20px;
+                  margin-bottom: 30px;
                   display: flex;
-                  align-items: center;
+                  align-items: flex-start;
                   justify-content: space-between;
                 }
                 .logo {
-                  max-height: 60px;
+                  max-height: 80px;
                   width: auto;
                 }
                 .company-info {
-                  text-align: right;
-                  font-size: 10px;
-                  color: #666;
+                  text-align: left;
+                  font-size: 11px;
+                  color: #333;
+                  line-height: 1.6;
                 }
                 h1 { 
                   color: #FF6600; 
@@ -464,21 +465,24 @@ export function ListagensSection() {
         <CardContent>
           <div id="conteudo-impressao">
             <div className="header mb-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <img src={logoAlmadados} alt="Almadados Logo" className="logo h-16 w-auto" />
-                  <div>
-                    <h1 className="text-2xl font-bold text-primary mb-1">Sistema de Gestão - Almadados</h1>
-                    <p className="text-sm text-gray-600">
-                      Relatório de {filtroTipo === 'tarefas' ? 'Tarefas' : filtroTipo === 'propostas' ? 'Propostas' : 'Clientes'}
-                    </p>
+              <div className="flex items-start justify-between">
+                <div className="flex items-start space-x-6">
+                  <img src={logoAlmadados} alt="Almadados Logo" className="logo h-20 w-auto" />
+                  <div className="text-sm leading-relaxed">
+                    <div className="font-bold text-lg mb-2">Almadados Informática, Lda</div>
+                    <div>R. Ramiro Ferrão, 40 Esc. Dto</div>
+                    <div>2800 - 505 Almada</div>
+                    <div>Mat. Con. Reg. de n°</div>
+                    <div>Contribuinte : 503708798</div>
                   </div>
                 </div>
-                <div className="company-info text-right">
-                  <div className="text-xs text-gray-500">
+                <div className="text-right">
+                  <div className="text-lg font-bold text-primary mb-2">
+                    Relatório de {filtroTipo === 'tarefas' ? 'Tarefas' : filtroTipo === 'propostas' ? 'Propostas' : 'Clientes'}
+                  </div>
+                  <div className="text-sm text-gray-600">
                     <div>Data: {new Date().toLocaleDateString('pt-PT')}</div>
                     <div>Hora: {new Date().toLocaleTimeString('pt-PT')}</div>
-                    <div className="mt-2 font-semibold">www.almadados.pt</div>
                   </div>
                 </div>
               </div>
