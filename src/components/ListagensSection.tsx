@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +7,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Printer, FileText } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
-// Usar imagem da pasta public
 
 export function ListagensSection() {
   const [filtroTipo, setFiltroTipo] = useState<'tarefas' | 'propostas' | 'clientes'>('tarefas');
@@ -77,11 +75,13 @@ export function ListagensSection() {
         janelaImpressao.document.write(`
           <html>
             <head>
-              <title>Relatório Almadados</title>
+              <title>Listagem Almadados</title>
               <style>
                 @page {
                   margin: 1.5cm;
                   size: A4;
+                  @bottom-left { content: "Gestão Almadados© 2025 Almadados - Todos os direitos reservados"; }
+                  @bottom-right { content: "página " counter(page) " de " counter(pages); }
                 }
                 body { 
                   font-family: Arial, sans-serif; 
@@ -89,47 +89,60 @@ export function ListagensSection() {
                   padding: 0;
                   line-height: 1.4;
                   color: #333;
-                  font-size: 12px;
+                  font-size: 11px;
                   background: #fff;
                 }
-                
-                /* Cabeçalho */
                 .header {
+                  margin-bottom: 25px;
                   display: flex;
                   align-items: center;
-                  margin-bottom: 30px;
+                  justify-content: flex-start;
                   gap: 15px;
                 }
                 .logo {
-                  max-height: 50px;
+                  max-height: 60px;
                   width: auto;
                 }
-                .company-info h1 {
-                  font-size: 16px;
-                  font-weight: bold;
-                  margin: 0;
-                  color: #333;
-                }
-                .company-info p {
-                  margin: 1px 0;
-                  font-size: 11px;
-                  color: #666;
-                  line-height: 1.2;
-                }
-                
-                /* Informações do relatório */
-                .report-info {
-                  margin-bottom: 25px;
+                .company-info {
                   text-align: left;
+                  font-size: 11px;
+                  color: #333;
+                  line-height: 1.1;
                 }
-                .report-info h2 {
+                .company-info div {
+                  margin: 0;
+                  padding: 0;
+                  line-height: 1.1;
+                }
+                .company-name {
                   font-size: 14px;
                   font-weight: bold;
-                  margin: 0 0 5px 0;
                   color: #333;
+                  margin-bottom: 2px;
                 }
-                
-                /* Tabela */
+                .report-info {
+                  margin-top: 15px;
+                  text-align: left;
+                  font-size: 11px;
+                }
+                .report-title {
+                  font-size: 14px;
+                  font-weight: bold;
+                  color: #333;
+                  margin-bottom: 5px;
+                }
+                h1 { 
+                  color: #333; 
+                  font-size: 16px;
+                  margin: 0;
+                  font-weight: bold;
+                }
+                h3 {
+                  color: #333;
+                  font-size: 14px;
+                  margin: 20px 0 15px 0;
+                  font-weight: bold;
+                }
                 table { 
                   width: 100%; 
                   border-collapse: collapse; 
@@ -137,26 +150,24 @@ export function ListagensSection() {
                   font-size: 10px;
                 }
                 th { 
-                  background: #f5f5f5;
+                  background: #f0f0f0;
                   color: #333;
                   padding: 8px 6px;
                   text-align: left;
                   font-weight: bold;
                   font-size: 10px;
-                  border: 1px solid #ddd;
+                  border: 1px solid #ccc;
                 }
                 td { 
-                  border: 1px solid #ddd; 
+                  border: 1px solid #ccc; 
                   padding: 6px; 
                   vertical-align: top;
                   background: #fff;
                   font-size: 10px;
                 }
                 tr:nth-child(even) td {
-                  background: #fafafa;
+                  background: #f9f9f9;
                 }
-                
-                /* Status colors */
                 .status-pendente { 
                   background-color: #fff3cd !important; 
                   color: #856404;
@@ -181,27 +192,26 @@ export function ListagensSection() {
                   background-color: #f8d7da !important;
                   color: #721c24;
                 }
-                
-                /* Rodapé */
                 .footer {
                   position: fixed;
-                  bottom: 1cm;
-                  left: 1.5cm;
-                  right: 1.5cm;
+                  bottom: 20px;
+                  left: 0;
+                  right: 0;
                   display: flex;
                   justify-content: space-between;
                   align-items: center;
                   font-size: 9px;
                   color: #666;
+                  padding: 0 20px;
                 }
                 .footer-left {
                   text-align: left;
-                  line-height: 1.3;
                 }
-                .footer-right {
-                  text-align: right;
+                .footer-center {
+                  text-align: center;
+                  flex: 1;
+                  margin: 0 20px;
                 }
-                
                 @media print { 
                   body { 
                     margin: 0; 
@@ -211,36 +221,13 @@ export function ListagensSection() {
                   .header { break-inside: avoid; }
                   table { break-inside: avoid; }
                   tr { break-inside: avoid; }
-                  .report-info { break-after: avoid; }
+                  h3 { break-after: avoid; }
+                  .total-registos { break-inside: avoid; }
                 }
               </style>
             </head>
             <body>
-              <div class="header">
-                <img src="/almadados-logo.png" alt="Almadados Logo" class="logo">
-                <div class="company-info">
-                  <h1>Almadados Informática, Lda</h1>
-                  <p>R. Ramiro Ferrão, 40 Esc. Dto</p>
-                  <p>2800 - 505 Almada</p>
-                  <p>Mat. Con. Reg. de nº</p>
-                  <p>Contribuinte: 503708798</p>
-                </div>
-              </div>
-              
-              <div class="report-info">
-                <h2>Relatório de ${filtroTipo === 'tarefas' ? 'Tarefas' : filtroTipo === 'propostas' ? 'Propostas' : 'Clientes'} | Data: ${new Date().toLocaleDateString('pt-PT')} | Hora: ${new Date().toLocaleTimeString('pt-PT')}</h2>
-              </div>
-              
               ${conteudo.innerHTML}
-              
-              <div class="footer">
-                <div class="footer-left">
-                  Gestão Almadados© 2025 Almadados - Todos os direitos reservados
-                </div>
-                <div class="footer-right">
-                  página 1 de 1
-                </div>
-              </div>
             </body>
           </html>
         `);
@@ -489,27 +476,40 @@ export function ListagensSection() {
           <CardTitle className="text-primary">Resultados da Listagem</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-4 mb-6">
-            <Button onClick={handleImprimir} className="flex items-center gap-2">
-              <Printer className="h-4 w-4" />
-              Imprimir
-            </Button>
-            <Button onClick={handleGerarPDF} variant="outline" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              Gerar PDF
-            </Button>
-          </div>
-
-          {/* Conteúdo visível para o usuário */}
-          {filtroTipo === 'tarefas' && renderTarefas()}
-          {filtroTipo === 'propostas' && renderPropostas()}
-          {filtroTipo === 'clientes' && renderClientes()}
-
-          {/* Conteúdo oculto apenas para impressão/PDF */}
-          <div id="conteudo-impressao" style={{ display: 'none' }}>
-            {filtroTipo === 'tarefas' && renderTarefas()}
-            {filtroTipo === 'propostas' && renderPropostas()}
-            {filtroTipo === 'clientes' && renderClientes()}
+          <div id="conteudo-impressao">
+            <div className="header mb-6">
+              <div className="flex items-start space-x-4">
+                <img src="/Almadados.jpg" alt="Almadados Logo" className="logo h-16 w-auto" />
+                <div className="company-info">
+                  <div className="company-name font-bold">Almadados Informática, Lda</div>
+                  <div>R. Ramiro Ferrão, 40 Esc. Dto</div>
+                  <div>2800 - 505 Almada</div>
+                  <div>Mat. Con. Reg. de n°</div>
+                  <div>Contribuinte : 503708798</div>
+                  
+                  <div className="report-info mt-4">
+                    <div className="report-title font-bold">
+                      Relatório de {filtroTipo === 'tarefas' ? 'Tarefas' : filtroTipo === 'propostas' ? 'Propostas' : 'Clientes'} | Data: {new Date().toLocaleDateString('pt-PT')} | Hora: {new Date().toLocaleTimeString('pt-PT')}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {dadosFiltrados.length === 0 ? (
+              <p className="text-gray-500 text-center py-8">Nenhum registo encontrado com os filtros aplicados</p>
+            ) : (
+              <>
+                {filtroTipo === 'tarefas' && renderTarefas()}
+                {filtroTipo === 'propostas' && renderPropostas()}
+                {filtroTipo === 'clientes' && renderClientes()}
+              </>
+            )}
+            
+            <div className="footer mt-8" style={{display: 'none'}}>
+              <div className="footer-left">Gestão Almadados© 2025 Almadados - Todos os direitos reservados</div>
+              <div className="footer-center">página 1 de 1</div>
+            </div>
           </div>
         </CardContent>
       </Card>
