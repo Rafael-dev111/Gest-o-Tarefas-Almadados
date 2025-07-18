@@ -77,13 +77,11 @@ export function ListagensSection() {
         janelaImpressao.document.write(`
           <html>
             <head>
-              <title>Listagem Almadados</title>
+              <title>Relatório Almadados</title>
               <style>
                 @page {
                   margin: 1.5cm;
                   size: A4;
-                  @bottom-left { content: "Página " counter(page) " de " counter(pages); }
-                  @bottom-center { content: "Documento gerado automaticamente pelo Sistema de Gestão Almadados\\A© 2025 Almadados – Todos os direitos reservados"; }
                 }
                 body { 
                   font-family: Arial, sans-serif; 
@@ -91,55 +89,51 @@ export function ListagensSection() {
                   padding: 0;
                   line-height: 1.4;
                   color: #333;
-                  font-size: 11px;
+                  font-size: 12px;
                   background: #fff;
                 }
+                
+                /* Cabeçalho */
                 .header {
-                  margin-bottom: 25px;
                   display: flex;
                   align-items: center;
-                  justify-content: flex-start;
+                  margin-bottom: 30px;
                   gap: 15px;
                 }
                 .logo {
-                  max-height: 60px;
+                  max-height: 50px;
                   width: auto;
                 }
-                .company-info {
-                  text-align: left;
-                  font-size: 11px;
-                  color: #333;
-                  line-height: 1.4;
-                }
-                .company-name {
-                  font-size: 14px;
-                  font-weight: bold;
-                  color: #333;
-                  margin-bottom: 5px;
-                }
-                .report-info {
-                  margin-top: 15px;
-                  text-align: left;
-                  font-size: 11px;
-                }
-                .report-title {
-                  font-size: 14px;
-                  font-weight: bold;
-                  color: #333;
-                  margin-bottom: 5px;
-                }
-                h1 { 
-                  color: #333; 
+                .company-info h1 {
                   font-size: 16px;
+                  font-weight: bold;
                   margin: 0;
-                  font-weight: bold;
-                }
-                h3 {
                   color: #333;
-                  font-size: 14px;
-                  margin: 20px 0 15px 0;
-                  font-weight: bold;
                 }
+                .company-info p {
+                  margin: 2px 0;
+                  font-size: 11px;
+                  color: #666;
+                }
+                
+                /* Informações do relatório */
+                .report-info {
+                  margin-bottom: 25px;
+                  text-align: left;
+                }
+                .report-info h2 {
+                  font-size: 14px;
+                  font-weight: bold;
+                  margin: 0 0 5px 0;
+                  color: #333;
+                }
+                .report-info p {
+                  margin: 2px 0;
+                  font-size: 11px;
+                  color: #666;
+                }
+                
+                /* Tabela */
                 table { 
                   width: 100%; 
                   border-collapse: collapse; 
@@ -147,24 +141,26 @@ export function ListagensSection() {
                   font-size: 10px;
                 }
                 th { 
-                  background: #f0f0f0;
+                  background: #f5f5f5;
                   color: #333;
                   padding: 8px 6px;
                   text-align: left;
                   font-weight: bold;
                   font-size: 10px;
-                  border: 1px solid #ccc;
+                  border: 1px solid #ddd;
                 }
                 td { 
-                  border: 1px solid #ccc; 
+                  border: 1px solid #ddd; 
                   padding: 6px; 
                   vertical-align: top;
                   background: #fff;
                   font-size: 10px;
                 }
                 tr:nth-child(even) td {
-                  background: #f9f9f9;
+                  background: #fafafa;
                 }
+                
+                /* Status colors */
                 .status-pendente { 
                   background-color: #fff3cd !important; 
                   color: #856404;
@@ -189,26 +185,27 @@ export function ListagensSection() {
                   background-color: #f8d7da !important;
                   color: #721c24;
                 }
+                
+                /* Rodapé */
                 .footer {
                   position: fixed;
-                  bottom: 20px;
-                  left: 0;
-                  right: 0;
+                  bottom: 1cm;
+                  left: 1.5cm;
+                  right: 1.5cm;
                   display: flex;
                   justify-content: space-between;
                   align-items: center;
                   font-size: 9px;
                   color: #666;
-                  padding: 0 20px;
                 }
                 .footer-left {
                   text-align: left;
+                  line-height: 1.3;
                 }
-                .footer-center {
-                  text-align: center;
-                  flex: 1;
-                  margin: 0 20px;
+                .footer-right {
+                  text-align: right;
                 }
+                
                 @media print { 
                   body { 
                     margin: 0; 
@@ -218,13 +215,39 @@ export function ListagensSection() {
                   .header { break-inside: avoid; }
                   table { break-inside: avoid; }
                   tr { break-inside: avoid; }
-                  h3 { break-after: avoid; }
-                  .total-registos { break-inside: avoid; }
+                  .report-info { break-after: avoid; }
                 }
               </style>
             </head>
             <body>
+              <div class="header">
+                <img src="/almadados-logo.png" alt="Almadados Logo" class="logo">
+                <div class="company-info">
+                  <h1>Almadados Informática, Lda</h1>
+                  <p>R. Ramiro Ferrão, 40 Esc. Dto</p>
+                  <p>2800 - 505 Almada</p>
+                  <p>Mat. Con. Reg. de nº</p>
+                  <p>Contribuinte: 503708798</p>
+                </div>
+              </div>
+              
+              <div class="report-info">
+                <h2>Relatório de ${filtroTipo === 'tarefas' ? 'Tarefas' : filtroTipo === 'propostas' ? 'Propostas' : 'Clientes'}</h2>
+                <p>Data: ${new Date().toLocaleDateString('pt-PT')}</p>
+                <p>Hora: ${new Date().toLocaleTimeString('pt-PT')}</p>
+              </div>
+              
               ${conteudo.innerHTML}
+              
+              <div class="footer">
+                <div class="footer-left">
+                  <div>Documento gerado automaticamente pelo Sistema de Gestão Almadados</div>
+                  <div>© 2025 Almadados – Todos os direitos reservados</div>
+                </div>
+                <div class="footer-right">
+                  Página 1 de 1
+                </div>
+              </div>
             </body>
           </html>
         `);
@@ -473,27 +496,104 @@ export function ListagensSection() {
           <CardTitle className="text-primary">Resultados da Listagem</CardTitle>
         </CardHeader>
         <CardContent>
-          <div id="conteudo-impressao">
-            <div className="header mb-6">
-              <div className="flex items-start space-x-4">
-                <img src="/Almadados.jpg" alt="Almadados Logo" className="logo h-16 w-auto" />
-                <div className="company-info">
-                  <div className="company-name font-bold">Almadados Informática, Lda</div>
-                  <div>R. Ramiro Ferrão, 40 Esc. Dto</div>
-                  <div>2800 - 505 Almada</div>
-                  <div>Mat. Con. Reg. de n°</div>
-                  <div>Contribuinte : 503708798</div>
-                  
-                  <div className="report-info mt-4">
-                    <div className="report-title font-bold">
-                      Relatório de {filtroTipo === 'tarefas' ? 'Tarefas' : filtroTipo === 'propostas' ? 'Propostas' : 'Clientes'}
-                    </div>
-                    <div>Data: {new Date().toLocaleDateString('pt-PT')}</div>
-                    <div>Hora: {new Date().toLocaleTimeString('pt-PT')}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div id="conteudo-impressao" className="hidden print:block">
+            {/* Conteúdo da tabela para impressão */}
+            {filtroTipo === 'tarefas' && (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Assunto</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                    <th>Proposta</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dadosFiltrados.map((tarefa: any) => (
+                    <tr key={tarefa.id}>
+                      <td>{tarefa.cliente}</td>
+                      <td>{tarefa.assunto}</td>
+                      <td>{new Date(tarefa.criadaEm).toLocaleDateString('pt-PT')}</td>
+                      <td className={tarefa.concluida ? 'bg-green-100' : 'bg-yellow-100'}>
+                        {tarefa.concluida ? 'Concluida' : 'Pendente'}
+                      </td>
+                      <td>{tarefa.proposta || '-'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+            
+            {filtroTipo === 'propostas' && (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nº Prop.</th>
+                    <th>Cliente</th>
+                    <th>Assunto</th>
+                    <th>Data</th>
+                    <th>Situação</th>
+                    <th>Seguimento</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dadosFiltrados.map((proposta: any) => (
+                    <tr key={proposta.id}>
+                      <td>#{proposta.numeracao}</td>
+                      <td>{proposta.cliente.empresa}</td>
+                      <td>{proposta.assunto}</td>
+                      <td>{new Date(proposta.dataCreacao).toLocaleDateString('pt-PT')}</td>
+                      <td className={
+                        proposta.situacao === 'pendente' ? 'status-pendente' : 
+                        proposta.situacao === 'final' ? 'status-final' : 'status-sem-interesse'
+                      }>
+                        {proposta.situacao === 'pendente' ? 'Pendente' : 
+                         proposta.situacao === 'sem-interesse' ? 'Sem Interesse' : 'Final'}
+                      </td>
+                      <td>{proposta.seguimento.length > 0 ? proposta.seguimento.slice(0, 2).join('; ') + (proposta.seguimento.length > 2 ? '...' : '') : '-'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+            
+            {filtroTipo === 'clientes' && (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Empresa</th>
+                    <th>Contacto</th>
+                    <th>Telemóvel</th>
+                    <th>Email</th>
+                    <th>Localidade</th>
+                    <th>Tempo Negoc.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dadosFiltrados.map((cliente: any) => {
+                    const clientePropostas = propostas.filter(p => p.cliente.empresa === cliente.empresa);
+                    const primeiraPropostaData = clientePropostas.length > 0 ? 
+                      new Date(Math.min(...clientePropostas.map(p => new Date(p.dataCreacao).getTime()))) : null;
+                    const tempoNegociacao = primeiraPropostaData ? 
+                      Math.floor((Date.now() - primeiraPropostaData.getTime()) / (1000 * 60 * 60 * 24)) : 0;
+                    
+                    return (
+                      <tr key={cliente.id}>
+                        <td>{cliente.empresa}</td>
+                        <td>{cliente.contacto || '-'}</td>
+                        <td>{cliente.telemovel || '-'}</td>
+                        <td>{cliente.email || '-'}</td>
+                        <td>{cliente.localidade || '-'}</td>
+                        <td>
+                          {tempoNegociacao > 0 ? `${tempoNegociacao} dias` : '-'}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
             
             {dadosFiltrados.length === 0 ? (
               <p className="text-gray-500 text-center py-8">Nenhum registo encontrado com os filtros aplicados</p>
