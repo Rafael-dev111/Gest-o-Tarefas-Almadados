@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Printer, FileText } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
-import logoAlmadados from '@/assets/almadados-empresa.jpg';
+// Usar imagem da pasta public
 
 export function ListagensSection() {
   const [filtroTipo, setFiltroTipo] = useState<'tarefas' | 'propostas' | 'clientes'>('tarefas');
@@ -80,130 +80,194 @@ export function ListagensSection() {
               <title>Listagem Almadados</title>
               <style>
                 @page {
-                  margin: 1.5cm;
+                  margin: 2cm 1.5cm;
                   size: A4;
                 }
                 body { 
                   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
                   margin: 0; 
                   padding: 0;
-                  line-height: 1.4;
-                  color: #333;
-                  font-size: 11px;
+                  line-height: 1.5;
+                  color: #2c3e50;
+                  font-size: 12px;
+                  background: #fff;
                 }
                 .header {
-                  border-bottom: 3px solid #FF6600;
-                  padding-bottom: 20px;
-                  margin-bottom: 30px;
+                  border-bottom: 2px solid #e74c3c;
+                  padding-bottom: 25px;
+                  margin-bottom: 35px;
                   display: flex;
                   align-items: flex-start;
                   justify-content: space-between;
+                  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+                  padding: 20px;
+                  border-radius: 8px;
+                  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
                 }
                 .logo {
-                  max-height: 80px;
+                  max-height: 90px;
                   width: auto;
+                  border-radius: 6px;
+                  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
                 }
                 .company-info {
                   text-align: left;
-                  font-size: 11px;
-                  color: #333;
-                  line-height: 1.6;
+                  font-size: 13px;
+                  color: #2c3e50;
+                  line-height: 1.7;
+                  font-weight: 500;
+                }
+                .company-name {
+                  font-size: 18px;
+                  font-weight: 700;
+                  color: #e74c3c;
+                  margin-bottom: 8px;
+                }
+                .report-info {
+                  text-align: right;
+                  font-size: 12px;
+                }
+                .report-title {
+                  font-size: 20px;
+                  font-weight: 700;
+                  color: #2c3e50;
+                  margin-bottom: 8px;
+                  text-transform: uppercase;
+                  letter-spacing: 1px;
                 }
                 h1 { 
-                  color: #FF6600; 
-                  font-size: 24px;
+                  color: #e74c3c; 
+                  font-size: 26px;
                   margin: 0;
-                  font-weight: 600;
+                  font-weight: 700;
+                  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
                 }
                 h3 {
-                  color: #333;
-                  font-size: 16px;
-                  margin: 20px 0 15px 0;
-                  font-weight: 600;
-                  border-left: 4px solid #FF6600;
-                  padding-left: 10px;
+                  color: #2c3e50;
+                  font-size: 18px;
+                  margin: 30px 0 20px 0;
+                  font-weight: 700;
+                  border-left: 5px solid #e74c3c;
+                  padding-left: 15px;
+                  background: linear-gradient(90deg, #f8f9fa, transparent);
+                  padding: 12px 0 12px 15px;
                 }
                 table { 
                   width: 100%; 
                   border-collapse: collapse; 
-                  margin: 15px 0 25px 0;
-                  font-size: 10px;
-                  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                  margin: 20px 0 35px 0;
+                  font-size: 11px;
+                  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                  border-radius: 8px;
+                  overflow: hidden;
                 }
                 th { 
-                  background: linear-gradient(135deg, #FF6600, #e55a00);
+                  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
                   color: white;
-                  padding: 12px 8px;
+                  padding: 15px 10px;
                   text-align: left;
-                  font-weight: 600;
-                  font-size: 10px;
+                  font-weight: 700;
+                  font-size: 11px;
                   border: none;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
                 }
                 td { 
-                  border: 1px solid #e0e0e0; 
-                  padding: 10px 8px; 
+                  border: 1px solid #ecf0f1; 
+                  padding: 12px 10px; 
                   vertical-align: top;
                   background: #fff;
+                  font-size: 11px;
                 }
                 tr:nth-child(even) td {
-                  background: #f9f9f9;
+                  background: #f8f9fa;
                 }
                 tr:hover td {
-                  background: #f0f8ff;
+                  background: #e3f2fd;
                 }
                 .status-pendente { 
                   background-color: #fff3cd !important; 
                   color: #856404;
-                  font-weight: 500;
+                  font-weight: 600;
+                  padding: 6px 10px;
+                  border-radius: 4px;
                 }
                 .status-final { 
                   background-color: #d4edda !important; 
                   color: #155724;
-                  font-weight: 500;
+                  font-weight: 600;
+                  padding: 6px 10px;
+                  border-radius: 4px;
                 }
                 .status-sem-interesse { 
                   background-color: #f8d7da !important; 
                   color: #721c24;
-                  font-weight: 500;
+                  font-weight: 600;
+                  padding: 6px 10px;
+                  border-radius: 4px;
                 }
                 .bg-green-100 {
                   background-color: #d4edda !important;
                   color: #155724;
-                  font-weight: 500;
+                  font-weight: 600;
+                  padding: 6px 10px;
+                  border-radius: 4px;
                 }
                 .bg-yellow-100 {
                   background-color: #fff3cd !important;
                   color: #856404;
-                  font-weight: 500;
+                  font-weight: 600;
+                  padding: 6px 10px;
+                  border-radius: 4px;
                 }
                 .bg-red-100 {
                   background-color: #f8d7da !important;
                   color: #721c24;
-                  font-weight: 500;
+                  font-weight: 600;
+                  padding: 6px 10px;
+                  border-radius: 4px;
                 }
                 .metadata {
                   text-align: center;
-                  font-size: 9px;
-                  color: #666;
-                  margin-top: 20px;
-                  padding-top: 15px;
-                  border-top: 1px solid #ddd;
+                  font-size: 10px;
+                  color: #7f8c8d;
+                  margin-top: 40px;
+                  padding-top: 20px;
+                  border-top: 2px solid #ecf0f1;
+                  background: #f8f9fa;
+                  padding: 20px;
+                  border-radius: 6px;
                 }
                 .total-registos {
-                  background: #f8f9fa;
-                  padding: 8px 12px;
+                  background: linear-gradient(135deg, #3498db, #2980b9);
+                  color: white;
+                  padding: 15px 20px;
+                  border-radius: 8px;
+                  margin: 25px 0;
+                  font-weight: 700;
+                  font-size: 14px;
+                  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+                  text-align: center;
+                }
+                .row-number {
+                  background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+                  color: white;
+                  font-weight: 700;
+                  text-align: center;
+                  padding: 8px;
                   border-radius: 4px;
-                  margin: 15px 0;
-                  font-weight: 600;
-                  color: #495057;
-                  border-left: 4px solid #28a745;
                 }
                 @media print { 
-                  body { margin: 0; }
+                  body { 
+                    margin: 0; 
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                  }
                   .header { break-inside: avoid; }
                   table { break-inside: avoid; }
                   tr { break-inside: avoid; }
                   h3 { break-after: avoid; }
+                  .total-registos { break-inside: avoid; }
                 }
               </style>
             </head>
@@ -264,16 +328,16 @@ export function ListagensSection() {
           <tbody>
             {dadosFiltrados.map((tarefa: any, index: number) => (
               <tr key={tarefa.id} className="hover:bg-gray-50">
-                <td className="border border-gray-300 p-3 font-bold text-center">#{index + 1}</td>
-                <td className="border border-gray-300 p-3 font-medium">{tarefa.cliente}</td>
+                <td className="border border-gray-300 p-3 row-number">#{index + 1}</td>
+                <td className="border border-gray-300 p-3 font-semibold">{tarefa.cliente}</td>
                 <td className="border border-gray-300 p-3">{tarefa.assunto}</td>
-                <td className="border border-gray-300 p-3 text-center">
+                <td className="border border-gray-300 p-3 text-center font-medium">
                   {new Date(tarefa.criadaEm).toLocaleDateString('pt-PT')}
                 </td>
-                <td className={`border border-gray-300 p-3 text-center font-medium ${tarefa.concluida ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                <td className={`border border-gray-300 p-3 text-center ${tarefa.concluida ? 'bg-green-100' : 'bg-yellow-100'}`}>
                   {tarefa.concluida ? '✅ Concluída' : '⏳ Pendente'}
                 </td>
-                <td className="border border-gray-300 p-3 text-center">{tarefa.proposta || '-'}</td>
+                <td className="border border-gray-300 p-3 text-center font-medium">{tarefa.proposta || '-'}</td>
               </tr>
             ))}
           </tbody>
@@ -467,22 +531,23 @@ export function ListagensSection() {
             <div className="header mb-6">
               <div className="flex items-start justify-between">
                 <div className="flex items-start space-x-6">
-                  <img src={logoAlmadados} alt="Almadados Logo" className="logo h-20 w-auto" />
-                  <div className="text-sm leading-relaxed">
-                    <div className="font-bold text-lg mb-2">Almadados Informática, Lda</div>
+                  <img src="/Almadados.jpg" alt="Almadados Logo" className="logo h-24 w-auto" />
+                  <div className="company-info">
+                    <div className="company-name">Almadados Informática, Lda</div>
                     <div>R. Ramiro Ferrão, 40 Esc. Dto</div>
                     <div>2800 - 505 Almada</div>
                     <div>Mat. Con. Reg. de n°</div>
                     <div>Contribuinte : 503708798</div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-lg font-bold text-primary mb-2">
+                <div className="report-info">
+                  <div className="report-title">
                     Relatório de {filtroTipo === 'tarefas' ? 'Tarefas' : filtroTipo === 'propostas' ? 'Propostas' : 'Clientes'}
                   </div>
                   <div className="text-sm text-gray-600">
-                    <div>Data: {new Date().toLocaleDateString('pt-PT')}</div>
-                    <div>Hora: {new Date().toLocaleTimeString('pt-PT')}</div>
+                    <div><strong>Data:</strong> {new Date().toLocaleDateString('pt-PT')}</div>
+                    <div><strong>Hora:</strong> {new Date().toLocaleTimeString('pt-PT')}</div>
+                    <div className="mt-2 text-xs">Página 1 de 1</div>
                   </div>
                 </div>
               </div>
