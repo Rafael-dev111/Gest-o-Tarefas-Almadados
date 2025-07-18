@@ -80,182 +80,134 @@ export function ListagensSection() {
               <title>Listagem Almadados</title>
               <style>
                 @page {
-                  margin: 2cm 1.5cm;
+                  margin: 1.5cm;
                   size: A4;
+                  @bottom-left { content: "Página " counter(page) " de " counter(pages); }
+                  @bottom-center { content: "Documento gerado automaticamente pelo Sistema de Gestão Almadados\\A© 2025 Almadados – Todos os direitos reservados"; }
                 }
                 body { 
-                  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                  font-family: Arial, sans-serif; 
                   margin: 0; 
                   padding: 0;
-                  line-height: 1.5;
-                  color: #2c3e50;
-                  font-size: 12px;
+                  line-height: 1.4;
+                  color: #333;
+                  font-size: 11px;
                   background: #fff;
                 }
                 .header {
-                  border-bottom: 2px solid #e74c3c;
-                  padding-bottom: 25px;
-                  margin-bottom: 35px;
+                  margin-bottom: 25px;
                   display: flex;
-                  align-items: flex-start;
-                  justify-content: space-between;
-                  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-                  padding: 20px;
-                  border-radius: 8px;
-                  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                  align-items: center;
+                  justify-content: flex-start;
+                  gap: 15px;
                 }
                 .logo {
-                  max-height: 90px;
+                  max-height: 60px;
                   width: auto;
-                  border-radius: 6px;
-                  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
                 }
                 .company-info {
                   text-align: left;
-                  font-size: 13px;
-                  color: #2c3e50;
-                  line-height: 1.7;
-                  font-weight: 500;
+                  font-size: 11px;
+                  color: #333;
+                  line-height: 1.4;
                 }
                 .company-name {
-                  font-size: 18px;
-                  font-weight: 700;
-                  color: #e74c3c;
-                  margin-bottom: 8px;
+                  font-size: 14px;
+                  font-weight: bold;
+                  color: #333;
+                  margin-bottom: 5px;
                 }
                 .report-info {
-                  text-align: right;
-                  font-size: 12px;
+                  margin-top: 15px;
+                  text-align: left;
+                  font-size: 11px;
                 }
                 .report-title {
-                  font-size: 20px;
-                  font-weight: 700;
-                  color: #2c3e50;
-                  margin-bottom: 8px;
-                  text-transform: uppercase;
-                  letter-spacing: 1px;
+                  font-size: 14px;
+                  font-weight: bold;
+                  color: #333;
+                  margin-bottom: 5px;
                 }
                 h1 { 
-                  color: #e74c3c; 
-                  font-size: 26px;
+                  color: #333; 
+                  font-size: 16px;
                   margin: 0;
-                  font-weight: 700;
-                  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+                  font-weight: bold;
                 }
                 h3 {
-                  color: #2c3e50;
-                  font-size: 18px;
-                  margin: 30px 0 20px 0;
-                  font-weight: 700;
-                  border-left: 5px solid #e74c3c;
-                  padding-left: 15px;
-                  background: linear-gradient(90deg, #f8f9fa, transparent);
-                  padding: 12px 0 12px 15px;
+                  color: #333;
+                  font-size: 14px;
+                  margin: 20px 0 15px 0;
+                  font-weight: bold;
                 }
                 table { 
                   width: 100%; 
                   border-collapse: collapse; 
-                  margin: 20px 0 35px 0;
-                  font-size: 11px;
-                  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-                  border-radius: 8px;
-                  overflow: hidden;
+                  margin: 15px 0;
+                  font-size: 10px;
                 }
                 th { 
-                  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-                  color: white;
-                  padding: 15px 10px;
+                  background: #f0f0f0;
+                  color: #333;
+                  padding: 8px 6px;
                   text-align: left;
-                  font-weight: 700;
-                  font-size: 11px;
-                  border: none;
-                  text-transform: uppercase;
-                  letter-spacing: 0.5px;
+                  font-weight: bold;
+                  font-size: 10px;
+                  border: 1px solid #ccc;
                 }
                 td { 
-                  border: 1px solid #ecf0f1; 
-                  padding: 12px 10px; 
+                  border: 1px solid #ccc; 
+                  padding: 6px; 
                   vertical-align: top;
                   background: #fff;
-                  font-size: 11px;
+                  font-size: 10px;
                 }
                 tr:nth-child(even) td {
-                  background: #f8f9fa;
-                }
-                tr:hover td {
-                  background: #e3f2fd;
+                  background: #f9f9f9;
                 }
                 .status-pendente { 
                   background-color: #fff3cd !important; 
                   color: #856404;
-                  font-weight: 600;
-                  padding: 6px 10px;
-                  border-radius: 4px;
                 }
                 .status-final { 
                   background-color: #d4edda !important; 
                   color: #155724;
-                  font-weight: 600;
-                  padding: 6px 10px;
-                  border-radius: 4px;
                 }
                 .status-sem-interesse { 
                   background-color: #f8d7da !important; 
                   color: #721c24;
-                  font-weight: 600;
-                  padding: 6px 10px;
-                  border-radius: 4px;
                 }
                 .bg-green-100 {
                   background-color: #d4edda !important;
                   color: #155724;
-                  font-weight: 600;
-                  padding: 6px 10px;
-                  border-radius: 4px;
                 }
                 .bg-yellow-100 {
                   background-color: #fff3cd !important;
                   color: #856404;
-                  font-weight: 600;
-                  padding: 6px 10px;
-                  border-radius: 4px;
                 }
                 .bg-red-100 {
                   background-color: #f8d7da !important;
                   color: #721c24;
-                  font-weight: 600;
-                  padding: 6px 10px;
-                  border-radius: 4px;
                 }
-                .metadata {
-                  text-align: center;
-                  font-size: 10px;
-                  color: #7f8c8d;
-                  margin-top: 40px;
-                  padding-top: 20px;
-                  border-top: 2px solid #ecf0f1;
-                  background: #f8f9fa;
-                  padding: 20px;
-                  border-radius: 6px;
+                .footer {
+                  position: fixed;
+                  bottom: 20px;
+                  left: 0;
+                  right: 0;
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  font-size: 9px;
+                  color: #666;
+                  padding: 0 20px;
                 }
-                .total-registos {
-                  background: linear-gradient(135deg, #3498db, #2980b9);
-                  color: white;
-                  padding: 15px 20px;
-                  border-radius: 8px;
-                  margin: 25px 0;
-                  font-weight: 700;
-                  font-size: 14px;
-                  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
-                  text-align: center;
+                .footer-left {
+                  text-align: left;
                 }
-                .row-number {
-                  background: linear-gradient(135deg, #95a5a6, #7f8c8d);
-                  color: white;
-                  font-weight: 700;
+                .footer-center {
                   text-align: center;
-                  padding: 8px;
-                  border-radius: 4px;
+                  flex: 1;
+                  margin: 0 20px;
                 }
                 @media print { 
                   body { 
@@ -311,13 +263,12 @@ export function ListagensSection() {
   const renderTarefas = () => (
     <div>
       <h3 className="text-lg font-medium mb-4">
-        📋 Tarefas {filtroStatus === 'pendentes' ? 'Pendentes' : filtroStatus === 'finalizadas' ? 'Finalizadas' : ''}
+        Tarefas {filtroStatus === 'pendentes' ? 'Pendentes' : filtroStatus === 'finalizadas' ? 'Finalizadas' : ''}
       </h3>
       <div className="overflow-x-auto">
         <table className="w-full border-collapse border border-gray-300">
           <thead>
             <tr className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
-              <th className="border border-gray-300 p-3 text-left w-12">#</th>
               <th className="border border-gray-300 p-3 text-left w-1/4">Cliente</th>
               <th className="border border-gray-300 p-3 text-left w-2/5">Assunto</th>
               <th className="border border-gray-300 p-3 text-left w-20">Data</th>
@@ -328,14 +279,13 @@ export function ListagensSection() {
           <tbody>
             {dadosFiltrados.map((tarefa: any, index: number) => (
               <tr key={tarefa.id} className="hover:bg-gray-50">
-                <td className="border border-gray-300 p-3 row-number">#{index + 1}</td>
                 <td className="border border-gray-300 p-3 font-semibold">{tarefa.cliente}</td>
                 <td className="border border-gray-300 p-3">{tarefa.assunto}</td>
                 <td className="border border-gray-300 p-3 text-center font-medium">
                   {new Date(tarefa.criadaEm).toLocaleDateString('pt-PT')}
                 </td>
                 <td className={`border border-gray-300 p-3 text-center ${tarefa.concluida ? 'bg-green-100' : 'bg-yellow-100'}`}>
-                  {tarefa.concluida ? '✅ Concluída' : '⏳ Pendente'}
+                  {tarefa.concluida ? 'Concluida' : 'Pendente'}
                 </td>
                 <td className="border border-gray-300 p-3 text-center font-medium">{tarefa.proposta || '-'}</td>
               </tr>
@@ -349,14 +299,13 @@ export function ListagensSection() {
   const renderPropostas = () => (
     <div>
       <h3 className="text-lg font-medium mb-4">
-        💼 Propostas {filtroStatus === 'pendentes' ? 'Pendentes' : filtroStatus === 'finalizadas' ? 'Finalizadas' : ''}
+        Propostas {filtroStatus === 'pendentes' ? 'Pendentes' : filtroStatus === 'finalizadas' ? 'Finalizadas' : ''}
         {dataInicio && dataFim && ` (${new Date(dataInicio).toLocaleDateString('pt-PT')} - ${new Date(dataFim).toLocaleDateString('pt-PT')})`}
       </h3>
       <div className="overflow-x-auto">
         <table className="w-full border-collapse border border-gray-300">
           <thead>
             <tr className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
-              <th className="border border-gray-300 p-3 text-left w-12">#</th>
               <th className="border border-gray-300 p-3 text-left w-20">Nº Prop.</th>
               <th className="border border-gray-300 p-3 text-left w-1/5">Cliente</th>
               <th className="border border-gray-300 p-3 text-left w-1/3">Assunto</th>
@@ -368,7 +317,6 @@ export function ListagensSection() {
           <tbody>
             {dadosFiltrados.map((proposta: any, index: number) => (
               <tr key={proposta.id} className="hover:bg-gray-50">
-                <td className="border border-gray-300 p-3 font-bold text-center">#{index + 1}</td>
                 <td className="border border-gray-300 p-3 font-mono text-center">#{proposta.numeracao}</td>
                 <td className="border border-gray-300 p-3 font-medium">{proposta.cliente.empresa}</td>
                 <td className="border border-gray-300 p-3">{proposta.assunto}</td>
@@ -379,8 +327,8 @@ export function ListagensSection() {
                   proposta.situacao === 'pendente' ? 'bg-yellow-100 text-yellow-800' : 
                   proposta.situacao === 'final' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}>
-                  {proposta.situacao === 'pendente' ? '⏳ Pendente' : 
-                   proposta.situacao === 'sem-interesse' ? '❌ Sem Interesse' : '✅ Final'}
+                  {proposta.situacao === 'pendente' ? 'Pendente' : 
+                   proposta.situacao === 'sem-interesse' ? 'Sem Interesse' : 'Final'}
                 </td>
                 <td className="border border-gray-300 p-3 text-sm">
                   {proposta.seguimento.length > 0 ? proposta.seguimento.slice(0, 2).join('; ') + (proposta.seguimento.length > 2 ? '...' : '') : '-'}
@@ -396,13 +344,12 @@ export function ListagensSection() {
   const renderClientes = () => (
     <div>
       <h3 className="text-lg font-medium mb-4">
-        👥 Clientes {dataInicio && dataFim && `com Propostas (${new Date(dataInicio).toLocaleDateString('pt-PT')} - ${new Date(dataFim).toLocaleDateString('pt-PT')})`}
+        Clientes {dataInicio && dataFim && `com Propostas (${new Date(dataInicio).toLocaleDateString('pt-PT')} - ${new Date(dataFim).toLocaleDateString('pt-PT')})`}
       </h3>
       <div className="overflow-x-auto">
         <table className="w-full border-collapse border border-gray-300">
           <thead>
             <tr className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
-              <th className="border border-gray-300 p-3 text-left w-12">#</th>
               <th className="border border-gray-300 p-3 text-left w-1/4">Empresa</th>
               <th className="border border-gray-300 p-3 text-left w-1/6">Contacto</th>
               <th className="border border-gray-300 p-3 text-left w-24">Telemóvel</th>
@@ -421,7 +368,6 @@ export function ListagensSection() {
               
               return (
                 <tr key={cliente.id} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 p-3 font-bold text-center">#{index + 1}</td>
                   <td className="border border-gray-300 p-3 font-medium">{cliente.empresa}</td>
                   <td className="border border-gray-300 p-3">{cliente.contacto || '-'}</td>
                   <td className="border border-gray-300 p-3 text-center">{cliente.telemovel || '-'}</td>
@@ -529,37 +475,24 @@ export function ListagensSection() {
         <CardContent>
           <div id="conteudo-impressao">
             <div className="header mb-6">
-              <div className="flex items-start justify-between">
-                <div className="flex items-start space-x-6">
-                  <img src="/Almadados.jpg" alt="Almadados Logo" className="logo h-24 w-auto" />
-                  <div className="company-info">
-                    <div className="company-name">Almadados Informática, Lda</div>
-                    <div>R. Ramiro Ferrão, 40 Esc. Dto</div>
-                    <div>2800 - 505 Almada</div>
-                    <div>Mat. Con. Reg. de n°</div>
-                    <div>Contribuinte : 503708798</div>
-                  </div>
-                </div>
-                <div className="report-info">
-                  <div className="report-title">
-                    Relatório de {filtroTipo === 'tarefas' ? 'Tarefas' : filtroTipo === 'propostas' ? 'Propostas' : 'Clientes'}
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    <div><strong>Data:</strong> {new Date().toLocaleDateString('pt-PT')}</div>
-                    <div><strong>Hora:</strong> {new Date().toLocaleTimeString('pt-PT')}</div>
-                    <div className="mt-2 text-xs">Página 1 de 1</div>
+              <div className="flex items-start space-x-4">
+                <img src="/Almadados.jpg" alt="Almadados Logo" className="logo h-16 w-auto" />
+                <div className="company-info">
+                  <div className="company-name font-bold">Almadados Informática, Lda</div>
+                  <div>R. Ramiro Ferrão, 40 Esc. Dto</div>
+                  <div>2800 - 505 Almada</div>
+                  <div>Mat. Con. Reg. de n°</div>
+                  <div>Contribuinte : 503708798</div>
+                  
+                  <div className="report-info mt-4">
+                    <div className="report-title font-bold">
+                      Relatório de {filtroTipo === 'tarefas' ? 'Tarefas' : filtroTipo === 'propostas' ? 'Propostas' : 'Clientes'}
+                    </div>
+                    <div>Data: {new Date().toLocaleDateString('pt-PT')}</div>
+                    <div>Hora: {new Date().toLocaleTimeString('pt-PT')}</div>
                   </div>
                 </div>
               </div>
-            </div>
-            
-            <div className="total-registos">
-              <strong>Total de registos encontrados: {dadosFiltrados.length}</strong>
-              {dataInicio && dataFim && (
-                <span className="ml-4 text-sm">
-                  Período: {new Date(dataInicio).toLocaleDateString('pt-PT')} - {new Date(dataFim).toLocaleDateString('pt-PT')}
-                </span>
-              )}
             </div>
             
             {dadosFiltrados.length === 0 ? (
@@ -572,9 +505,12 @@ export function ListagensSection() {
               </>
             )}
             
-            <div className="metadata">
-              <p>Documento gerado automaticamente pelo Sistema de Gestão Almadados</p>
-              <p>© {new Date().getFullYear()} Almadados - Todos os direitos reservados</p>
+            <div className="footer mt-8" style={{display: 'none'}}>
+              <div className="footer-left">Página 1 de 1</div>
+              <div className="footer-center">
+                Documento gerado automaticamente pelo Sistema de Gestão Almadados<br/>
+                © 2025 Almadados – Todos os direitos reservados
+              </div>
             </div>
           </div>
         </CardContent>
