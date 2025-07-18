@@ -254,29 +254,8 @@ export function ListagensSection() {
   const handleGerarPDF = () => {
     const conteudo = document.getElementById('conteudo-impressao');
     if (conteudo) {
-      // Criar uma versão completa do HTML para o PDF incluindo footer e paginação
-      const htmlCompleto = `
-        <div style="font-family: Arial, sans-serif; font-size: 12px; position: relative; min-height: 100vh;">
-          ${conteudo.innerHTML}
-          <div style="position: absolute; bottom: 60px; left: 0; right: 0; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #ccc; padding-top: 10px; margin-top: 40px;">
-            Gestão Almadados© 2025 Almadados - Todos os direitos reservados
-          </div>
-          <div style="position: absolute; bottom: 20px; right: 20px; font-size: 10px; color: #666;">
-            Página 1 de 1
-          </div>
-        </div>
-      `;
-      
-      // Criar elemento temporário
-      const elementoTemp = document.createElement('div');
-      elementoTemp.innerHTML = htmlCompleto;
-      elementoTemp.style.position = 'absolute';
-      elementoTemp.style.left = '-9999px';
-      elementoTemp.style.top = '-9999px';
-      document.body.appendChild(elementoTemp);
-
       const opt = {
-        margin: [0.4, 0.4, 0.8, 0.4], // Margem inferior maior para acomodar footer
+        margin: [0.4, 0.4, 1.2, 0.4], // Margem inferior maior para footer
         filename: `almadados_${tipoListagem}_${new Date().toLocaleDateString('pt-PT').replace(/\//g, '-')}.pdf`,
         image: { type: 'jpeg', quality: 0.95 },
         html2canvas: { 
@@ -290,12 +269,28 @@ export function ListagensSection() {
           format: 'a4', 
           orientation: 'landscape',
           compress: true
-        }
+        },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
       
-      html2pdf().from(elementoTemp).set(opt).save().then(() => {
-        // Remover elemento temporário após gerar PDF
-        document.body.removeChild(elementoTemp);
+      // Adicionar footer e paginação diretamente ao conteúdo antes de gerar PDF
+      const footerHTML = `
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; text-align: center; font-size: 12px; color: #666;">
+          Gestão Almadados© 2025 Almadados - Todos os direitos reservados
+        </div>
+        <div style="margin-top: 10px; text-align: right; font-size: 10px; color: #666;">
+          Página 1 de 1
+        </div>
+      `;
+      
+      conteudo.insertAdjacentHTML('beforeend', footerHTML);
+      
+      html2pdf().from(conteudo).set(opt).save().then(() => {
+        // Remover o footer adicionado após gerar o PDF
+        const footerElements = conteudo.querySelectorAll('div[style*="margin-top: 40px"]');
+        footerElements.forEach(el => el.remove());
+        const pageElements = conteudo.querySelectorAll('div[style*="margin-top: 10px"][style*="text-align: right"]');
+        pageElements.forEach(el => el.remove());
       });
     }
   };
