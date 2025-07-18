@@ -61,8 +61,8 @@ export function ListagensSection() {
           propostasFiltradas = propostas.filter(p => p.situacao === 'concluida-sem-sucesso');
         }
         
-        propostasFiltradas = aplicarFiltroData(propostasFiltradas, 'criadaEm');
-        return propostasFiltradas.sort((a, b) => new Date(b.criadaEm).getTime() - new Date(a.criadaEm).getTime());
+        propostasFiltradas = aplicarFiltroData(propostasFiltradas, 'dataCreacao');
+        return propostasFiltradas.sort((a, b) => new Date(b.dataCreacao).getTime() - new Date(a.dataCreacao).getTime());
 
       case 'clientes':
         let clientesFiltrados = clientes;
@@ -326,7 +326,7 @@ export function ListagensSection() {
             <td className="border border-gray-300 p-3">{proposta.assunto}</td>
             <td className="border border-gray-300 p-3">{proposta.area}</td>
             <td className="border border-gray-300 p-3 text-center">
-              {new Date(proposta.criadaEm).toLocaleDateString('pt-PT')}
+              {new Date(proposta.dataCreacao).toLocaleDateString('pt-PT')}
             </td>
             <td className={`border border-gray-300 p-3 text-center ${
               proposta.situacao === 'ativa' ? 'status-ativa' : 
@@ -337,7 +337,7 @@ export function ListagensSection() {
             </td>
             <td className="border border-gray-300 p-3 text-sm">
               {proposta.seguimento.length > 0 ? 
-                proposta.seguimento[proposta.seguimento.length - 1].descricao.substring(0, 50) + '...' : '-'}
+                proposta.seguimento[proposta.seguimento.length - 1].detalhes.substring(0, 50) + '...' : '-'}
             </td>
           </tr>
         ))}
