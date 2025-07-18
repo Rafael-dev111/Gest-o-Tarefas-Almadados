@@ -496,29 +496,50 @@ export function ListagensSection() {
           <CardTitle className="text-primary">Resultados da Listagem</CardTitle>
         </CardHeader>
         <CardContent>
-          <div id="conteudo-impressao" className="hidden print:block">
-            {/* Conteúdo da tabela para impressão */}
+          <div className="flex gap-4 mb-6">
+            <Button onClick={handleImprimir} className="flex items-center gap-2">
+              <Printer className="h-4 w-4" />
+              Imprimir
+            </Button>
+            <Button onClick={handleGerarPDF} variant="outline" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Gerar PDF
+            </Button>
+          </div>
+
+          {/* Conteúdo visível para o usuário */}
+          {filtroTipo === 'tarefas' && renderTarefas()}
+          {filtroTipo === 'propostas' && renderPropostas()}
+          {filtroTipo === 'clientes' && renderClientes()}
+
+          {/* Conteúdo oculto apenas para impressão/PDF */}
+          <div id="conteudo-impressao" style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
             {filtroTipo === 'tarefas' && (
-              <table>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10px' }}>
                 <thead>
-                  <tr>
-                    <th>Cliente</th>
-                    <th>Assunto</th>
-                    <th>Data</th>
-                    <th>Status</th>
-                    <th>Proposta</th>
+                  <tr style={{ backgroundColor: '#f5f5f5' }}>
+                    <th style={{ border: '1px solid #ddd', padding: '8px 6px', textAlign: 'left', fontWeight: 'bold' }}>Cliente</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px 6px', textAlign: 'left', fontWeight: 'bold' }}>Assunto</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px 6px', textAlign: 'left', fontWeight: 'bold' }}>Data</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px 6px', textAlign: 'left', fontWeight: 'bold' }}>Status</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px 6px', textAlign: 'left', fontWeight: 'bold' }}>Proposta</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {dadosFiltrados.map((tarefa: any) => (
-                    <tr key={tarefa.id}>
-                      <td>{tarefa.cliente}</td>
-                      <td>{tarefa.assunto}</td>
-                      <td>{new Date(tarefa.criadaEm).toLocaleDateString('pt-PT')}</td>
-                      <td className={tarefa.concluida ? 'bg-green-100' : 'bg-yellow-100'}>
+                  {dadosFiltrados.map((tarefa: any, index: number) => (
+                    <tr key={tarefa.id} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#fafafa' }}>
+                      <td style={{ border: '1px solid #ddd', padding: '6px' }}>{tarefa.cliente}</td>
+                      <td style={{ border: '1px solid #ddd', padding: '6px' }}>{tarefa.assunto}</td>
+                      <td style={{ border: '1px solid #ddd', padding: '6px' }}>{new Date(tarefa.criadaEm).toLocaleDateString('pt-PT')}</td>
+                      <td style={{ 
+                        border: '1px solid #ddd', 
+                        padding: '6px',
+                        backgroundColor: tarefa.concluida ? '#d4edda' : '#fff3cd',
+                        color: tarefa.concluida ? '#155724' : '#856404'
+                      }}>
                         {tarefa.concluida ? 'Concluida' : 'Pendente'}
                       </td>
-                      <td>{tarefa.proposta || '-'}</td>
+                      <td style={{ border: '1px solid #ddd', padding: '6px' }}>{tarefa.proposta || '-'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -526,32 +547,38 @@ export function ListagensSection() {
             )}
             
             {filtroTipo === 'propostas' && (
-              <table>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10px' }}>
                 <thead>
-                  <tr>
-                    <th>Nº Prop.</th>
-                    <th>Cliente</th>
-                    <th>Assunto</th>
-                    <th>Data</th>
-                    <th>Situação</th>
-                    <th>Seguimento</th>
+                  <tr style={{ backgroundColor: '#f5f5f5' }}>
+                    <th style={{ border: '1px solid #ddd', padding: '8px 6px', textAlign: 'left', fontWeight: 'bold' }}>Nº Prop.</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px 6px', textAlign: 'left', fontWeight: 'bold' }}>Cliente</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px 6px', textAlign: 'left', fontWeight: 'bold' }}>Assunto</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px 6px', textAlign: 'left', fontWeight: 'bold' }}>Data</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px 6px', textAlign: 'left', fontWeight: 'bold' }}>Situação</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px 6px', textAlign: 'left', fontWeight: 'bold' }}>Seguimento</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {dadosFiltrados.map((proposta: any) => (
-                    <tr key={proposta.id}>
-                      <td>#{proposta.numeracao}</td>
-                      <td>{proposta.cliente.empresa}</td>
-                      <td>{proposta.assunto}</td>
-                      <td>{new Date(proposta.dataCreacao).toLocaleDateString('pt-PT')}</td>
-                      <td className={
-                        proposta.situacao === 'pendente' ? 'status-pendente' : 
-                        proposta.situacao === 'final' ? 'status-final' : 'status-sem-interesse'
-                      }>
+                  {dadosFiltrados.map((proposta: any, index: number) => (
+                    <tr key={proposta.id} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#fafafa' }}>
+                      <td style={{ border: '1px solid #ddd', padding: '6px' }}>#{proposta.numeracao}</td>
+                      <td style={{ border: '1px solid #ddd', padding: '6px' }}>{proposta.cliente.empresa}</td>
+                      <td style={{ border: '1px solid #ddd', padding: '6px' }}>{proposta.assunto}</td>
+                      <td style={{ border: '1px solid #ddd', padding: '6px' }}>{new Date(proposta.dataCreacao).toLocaleDateString('pt-PT')}</td>
+                      <td style={{ 
+                        border: '1px solid #ddd', 
+                        padding: '6px',
+                        backgroundColor: proposta.situacao === 'pendente' ? '#fff3cd' : 
+                          proposta.situacao === 'final' ? '#d4edda' : '#f8d7da',
+                        color: proposta.situacao === 'pendente' ? '#856404' : 
+                          proposta.situacao === 'final' ? '#155724' : '#721c24'
+                      }}>
                         {proposta.situacao === 'pendente' ? 'Pendente' : 
                          proposta.situacao === 'sem-interesse' ? 'Sem Interesse' : 'Final'}
                       </td>
-                      <td>{proposta.seguimento.length > 0 ? proposta.seguimento.slice(0, 2).join('; ') + (proposta.seguimento.length > 2 ? '...' : '') : '-'}</td>
+                      <td style={{ border: '1px solid #ddd', padding: '6px' }}>
+                        {proposta.seguimento.length > 0 ? proposta.seguimento.slice(0, 2).join('; ') + (proposta.seguimento.length > 2 ? '...' : '') : '-'}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -559,19 +586,19 @@ export function ListagensSection() {
             )}
             
             {filtroTipo === 'clientes' && (
-              <table>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10px' }}>
                 <thead>
-                  <tr>
-                    <th>Empresa</th>
-                    <th>Contacto</th>
-                    <th>Telemóvel</th>
-                    <th>Email</th>
-                    <th>Localidade</th>
-                    <th>Tempo Negoc.</th>
+                  <tr style={{ backgroundColor: '#f5f5f5' }}>
+                    <th style={{ border: '1px solid #ddd', padding: '8px 6px', textAlign: 'left', fontWeight: 'bold' }}>Empresa</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px 6px', textAlign: 'left', fontWeight: 'bold' }}>Contacto</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px 6px', textAlign: 'left', fontWeight: 'bold' }}>Telemóvel</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px 6px', textAlign: 'left', fontWeight: 'bold' }}>Email</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px 6px', textAlign: 'left', fontWeight: 'bold' }}>Localidade</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px 6px', textAlign: 'left', fontWeight: 'bold' }}>Tempo Negoc.</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {dadosFiltrados.map((cliente: any) => {
+                  {dadosFiltrados.map((cliente: any, index: number) => {
                     const clientePropostas = propostas.filter(p => p.cliente.empresa === cliente.empresa);
                     const primeiraPropostaData = clientePropostas.length > 0 ? 
                       new Date(Math.min(...clientePropostas.map(p => new Date(p.dataCreacao).getTime()))) : null;
@@ -579,13 +606,13 @@ export function ListagensSection() {
                       Math.floor((Date.now() - primeiraPropostaData.getTime()) / (1000 * 60 * 60 * 24)) : 0;
                     
                     return (
-                      <tr key={cliente.id}>
-                        <td>{cliente.empresa}</td>
-                        <td>{cliente.contacto || '-'}</td>
-                        <td>{cliente.telemovel || '-'}</td>
-                        <td>{cliente.email || '-'}</td>
-                        <td>{cliente.localidade || '-'}</td>
-                        <td>
+                      <tr key={cliente.id} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#fafafa' }}>
+                        <td style={{ border: '1px solid #ddd', padding: '6px' }}>{cliente.empresa}</td>
+                        <td style={{ border: '1px solid #ddd', padding: '6px' }}>{cliente.contacto || '-'}</td>
+                        <td style={{ border: '1px solid #ddd', padding: '6px' }}>{cliente.telemovel || '-'}</td>
+                        <td style={{ border: '1px solid #ddd', padding: '6px' }}>{cliente.email || '-'}</td>
+                        <td style={{ border: '1px solid #ddd', padding: '6px' }}>{cliente.localidade || '-'}</td>
+                        <td style={{ border: '1px solid #ddd', padding: '6px' }}>
                           {tempoNegociacao > 0 ? `${tempoNegociacao} dias` : '-'}
                         </td>
                       </tr>
@@ -594,24 +621,6 @@ export function ListagensSection() {
                 </tbody>
               </table>
             )}
-            
-            {dadosFiltrados.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">Nenhum registo encontrado com os filtros aplicados</p>
-            ) : (
-              <>
-                {filtroTipo === 'tarefas' && renderTarefas()}
-                {filtroTipo === 'propostas' && renderPropostas()}
-                {filtroTipo === 'clientes' && renderClientes()}
-              </>
-            )}
-            
-            <div className="footer mt-8" style={{display: 'none'}}>
-              <div className="footer-left">Página 1 de 1</div>
-              <div className="footer-center">
-                Documento gerado automaticamente pelo Sistema de Gestão Almadados<br/>
-                © 2025 Almadados – Todos os direitos reservados
-              </div>
-            </div>
           </div>
         </CardContent>
       </Card>
