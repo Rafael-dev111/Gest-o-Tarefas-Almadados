@@ -19,6 +19,7 @@ export function SeguimentoManager({ seguimentos, onAddSeguimento }: SeguimentoMa
     data: new Date().toISOString().split('T')[0],
     detalhes: '',
     tipo: 'outro' as const,
+    proximoContacto: '',
   });
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [seguimentosExpanded, setSeguimentosExpanded] = useState(false);
@@ -32,6 +33,7 @@ export function SeguimentoManager({ seguimentos, onAddSeguimento }: SeguimentoMa
       data: new Date().toISOString().split('T')[0],
       detalhes: '',
       tipo: 'outro',
+      proximoContacto: '',
     });
     setMostrarFormulario(false);
   };
@@ -149,6 +151,16 @@ export function SeguimentoManager({ seguimentos, onAddSeguimento }: SeguimentoMa
                 </div>
               </div>
               <div>
+                <Label htmlFor="seg-proximo" className="text-xs">Próximo Contacto (opcional)</Label>
+                <Input
+                  id="seg-proximo"
+                  type="date"
+                  value={novoSeguimento.proximoContacto}
+                  onChange={(e) => setNovoSeguimento({ ...novoSeguimento, proximoContacto: e.target.value })}
+                  className="text-sm"
+                />
+              </div>
+              <div>
                 <Label htmlFor="seg-detalhes" className="text-xs">Detalhes</Label>
                 <Textarea
                   id="seg-detalhes"
@@ -191,6 +203,14 @@ export function SeguimentoManager({ seguimentos, onAddSeguimento }: SeguimentoMa
                 </div>
               </div>
               <p className="text-sm text-gray-700">{seguimento.detalhes}</p>
+              {seguimento.proximoContacto && (
+                <div className="mt-2 p-2 bg-blue-50 rounded text-xs">
+                  <span className="font-medium text-blue-800">Próximo contacto:</span>{' '}
+                  <span className="text-blue-700">
+                    {new Date(seguimento.proximoContacto).toLocaleDateString('pt-PT')}
+                  </span>
+                </div>
+              )}
             </div>
           ))}
         </div>

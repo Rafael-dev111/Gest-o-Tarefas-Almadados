@@ -33,6 +33,7 @@ export interface Seguimento {
   data: string;
   detalhes: string;
   tipo: 'proposta' | 'reuniao' | 'chamada' | 'email' | 'outro';
+  proximoContacto?: string;
 }
 
 export interface Proposta {
@@ -42,7 +43,7 @@ export interface Proposta {
   assunto: string;
   seguimento: Seguimento[];
   numeracao: number;
-  situacao: 'pendente' | 'sem-interesse' | 'final';
+  situacao: 'ativa' | 'concluida-sucesso' | 'concluida-sem-sucesso';
   detalhesPendente?: string;
   area?: string;
   criadaEm: string;

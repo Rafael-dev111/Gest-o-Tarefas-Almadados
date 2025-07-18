@@ -79,8 +79,8 @@ export function ConfiguracoesSection() {
     totalTarefas: tarefas.length,
     tarefasConcluidas: tarefas.filter(t => t.concluida).length,
     totalPropostas: propostas.length,
-    propostasFinalizadas: propostas.filter(p => p.situacao === 'final').length,
-    propostasPendentes: propostas.filter(p => p.situacao === 'pendente').length,
+    propostasFinalizadas: propostas.filter(p => p.situacao === 'concluida-sucesso' || p.situacao === 'concluida-sem-sucesso').length,
+    propostasPendentes: propostas.filter(p => p.situacao === 'ativa').length,
   };
 
   return (

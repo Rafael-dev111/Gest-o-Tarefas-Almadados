@@ -18,10 +18,12 @@ export function PropostasSection() {
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [editingProposta, setEditingProposta] = useState<Proposta | null>(null);
+  const [filtroTipo, setFiltroTipo] = useState<'ativas' | 'concluidas-sucesso' | 'concluidas-sem-sucesso'>('ativas');
+  const [filtroArea, setFiltroArea] = useState<string>('todas');
   const [formData, setFormData] = useState({
     clienteId: '',
     assunto: '',
-    situacao: 'pendente' as 'pendente' | 'sem-interesse' | 'final',
+    situacao: 'ativa' as 'ativa' | 'concluida-sucesso' | 'concluida-sem-sucesso',
     detalhesPendente: '',
     area: ''
   });
@@ -76,7 +78,7 @@ export function PropostasSection() {
       });
     }
 
-    setFormData({ clienteId: '', assunto: '', situacao: 'pendente', detalhesPendente: '', area: '' });
+    setFormData({ clienteId: '', assunto: '', situacao: 'ativa', detalhesPendente: '', area: '' });
     setEditingProposta(null);
     setIsOpen(false);
   };
@@ -121,17 +123,17 @@ export function PropostasSection() {
   };
 
   const resetForm = () => {
-    setFormData({ clienteId: '', assunto: '', situacao: 'pendente', detalhesPendente: '', area: '' });
+    setFormData({ clienteId: '', assunto: '', situacao: 'ativa', detalhesPendente: '', area: '' });
     setEditingProposta(null);
   };
 
   const getSituacaoColor = (situacao: string) => {
     switch (situacao) {
-      case 'pendente':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'final':
+      case 'ativa':
+        return 'bg-blue-100 text-blue-800';
+      case 'concluida-sucesso':
         return 'bg-green-100 text-green-800';
-      case 'sem-interesse':
+      case 'concluida-sem-sucesso':
         return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -140,19 +142,39 @@ export function PropostasSection() {
 
   const getSituacaoLabel = (situacao: string) => {
     switch (situacao) {
-      case 'pendente':
-        return 'Pendente';
-      case 'final':
-        return 'Final';
-      case 'sem-interesse':
-        return 'Sem Interesse';
+      case 'ativa':
+        return 'Ativa';
+      case 'concluida-sucesso':
+        return 'Concluída com Sucesso';
+      case 'concluida-sem-sucesso':
+        return 'Concluída sem Sucesso';
       default:
         return situacao;
     }
   };
 
-  // Ordenar propostas por data de criação (mais antigas primeiro)
-  const propostasOrdenadas = [...propostas].sort((a, b) => new Date(a.dataCreacao).getTime() - new Date(b.dataCreacao).getTime());
+  const filtrarPropostas = () => {
+    let propostasFiltradas = propostas;
+
+    // Filtrar por tipo
+    if (filtroTipo === 'ativas') {
+      propostasFiltradas = propostas.filter(p => p.situacao === 'ativa');
+      
+      // Filtrar por área se não for "todas"
+      if (filtroArea !== 'todas') {
+        propostasFiltradas = propostasFiltradas.filter(p => p.area === filtroArea);
+      }
+    } else if (filtroTipo === 'concluidas-sucesso') {
+      propostasFiltradas = propostas.filter(p => p.situacao === 'concluida-sucesso');
+    } else if (filtroTipo === 'concluidas-sem-sucesso') {
+      propostasFiltradas = propostas.filter(p => p.situacao === 'concluida-sem-sucesso');
+    }
+
+    // Ordenar por data mais recente primeiro
+    return propostasFiltradas.sort((a, b) => new Date(b.dataCreacao).getTime() - new Date(a.dataCreacao).getTime());
+  };
+
+  const propostasFiltradas = filtrarPropostas();
 
   return (
     <div className="space-y-6">
@@ -198,14 +220,14 @@ export function PropostasSection() {
                 </div>
                 <div>
                   <Label htmlFor="situacao">Situação</Label>
-                  <Select value={formData.situacao} onValueChange={(value: 'pendente' | 'sem-interesse' | 'final') => setFormData(prev => ({ ...prev, situacao: value }))}>
+                  <Select value={formData.situacao} onValueChange={(value: 'ativa' | 'concluida-sucesso' | 'concluida-sem-sucesso') => setFormData(prev => ({ ...prev, situacao: value }))}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="pendente">Pendente</SelectItem>
-                      <SelectItem value="final">Final</SelectItem>
-                      <SelectItem value="sem-interesse">Sem Interesse</SelectItem>
+                      <SelectItem value="ativa">Ativa</SelectItem>
+                      <SelectItem value="concluida-sucesso">Concluída com Sucesso</SelectItem>
+                      <SelectItem value="concluida-sem-sucesso">Concluída sem Sucesso</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -236,7 +258,7 @@ export function PropostasSection() {
                   </SelectContent>
                 </Select>
               </div>
-              {formData.situacao === 'pendente' && (
+              {formData.situacao === 'ativa' && (
                 <div>
                   <Label htmlFor="detalhesPendente">Detalhes Pendente (opcional)</Label>
                   <Textarea
@@ -265,8 +287,55 @@ export function PropostasSection() {
         </Dialog>
       </div>
 
+      {/* Filtros */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Filtros</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="filtro-tipo">Estado das Propostas</Label>
+              <Select value={filtroTipo} onValueChange={(value: any) => setFiltroTipo(value)}>
+                <SelectTrigger id="filtro-tipo">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ativas">Ativas</SelectItem>
+                  <SelectItem value="concluidas-sucesso">Concluídas com Sucesso</SelectItem>
+                  <SelectItem value="concluidas-sem-sucesso">Concluídas sem Sucesso</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {filtroTipo === 'ativas' && (
+              <div>
+                <Label htmlFor="filtro-area">Área</Label>
+                <Select value={filtroArea} onValueChange={setFiltroArea}>
+                  <SelectTrigger id="filtro-area">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todas">Todas</SelectItem>
+                    {areas.map((area) => (
+                      <SelectItem key={area.id} value={area.nome}>
+                        {area.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
+          
+          <div className="mt-4 text-sm text-gray-600">
+            Total de propostas: {propostasFiltradas.length}
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-4">
-        {propostasOrdenadas.map((proposta, index) => (
+        {propostasFiltradas.map((proposta, index) => (
           <Card key={proposta.id}>
             <CardHeader>
               <div className="flex justify-between items-start">
@@ -348,6 +417,18 @@ export function PropostasSection() {
           </Card>
         ))}
       </div>
+
+      {propostasFiltradas.length === 0 && propostas.length > 0 && (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <p className="text-muted-foreground">
+                Nenhuma proposta encontrada com os filtros aplicados.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {propostas.length === 0 && (
         <Card>

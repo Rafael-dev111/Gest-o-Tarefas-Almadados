@@ -30,9 +30,9 @@ export function ListagensSection() {
       case 'propostas':
         let propostasFiltradas = propostas;
         if (filtroStatus === 'pendentes') {
-          propostasFiltradas = propostas.filter(p => p.situacao === 'pendente');
+          propostasFiltradas = propostas.filter(p => p.situacao === 'ativa');
         } else if (filtroStatus === 'finalizadas') {
-          propostasFiltradas = propostas.filter(p => p.situacao === 'final');
+          propostasFiltradas = propostas.filter(p => p.situacao === 'concluida-sucesso' || p.situacao === 'concluida-sem-sucesso');
         }
         
         // Filtrar por data se especificado
@@ -327,11 +327,11 @@ export function ListagensSection() {
                   {new Date(proposta.dataCreacao).toLocaleDateString('pt-PT')}
                 </td>
                 <td className={`border border-gray-300 p-3 text-center font-medium ${
-                  proposta.situacao === 'pendente' ? 'bg-yellow-100 text-yellow-800' : 
-                  proposta.situacao === 'final' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  proposta.situacao === 'ativa' ? 'bg-blue-100 text-blue-800' : 
+                  proposta.situacao === 'concluida-sucesso' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}>
-                  {proposta.situacao === 'pendente' ? 'Pendente' : 
-                   proposta.situacao === 'sem-interesse' ? 'Sem Interesse' : 'Final'}
+                  {proposta.situacao === 'ativa' ? 'Ativa' : 
+                   proposta.situacao === 'concluida-sucesso' ? 'Concluída com Sucesso' : 'Concluída sem Sucesso'}
                 </td>
                 <td className="border border-gray-300 p-3 text-sm">
                   {proposta.seguimento.length > 0 ? proposta.seguimento.slice(0, 2).join('; ') + (proposta.seguimento.length > 2 ? '...' : '') : '-'}
