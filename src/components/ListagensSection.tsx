@@ -513,7 +513,27 @@ export function ListagensSection() {
           {filtroTipo === 'clientes' && renderClientes()}
 
           {/* Conteúdo oculto apenas para impressão/PDF */}
-          <div id="conteudo-impressao" style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+          <div id="conteudo-impressao" style={{ visibility: 'hidden', position: 'absolute', top: '-9999px', left: '-9999px', width: '210mm', minHeight: '297mm', backgroundColor: 'white', padding: '1.5cm', fontFamily: 'Arial, sans-serif', fontSize: '12px', color: '#333' }}>
+            {/* Cabeçalho */}
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '30px', gap: '15px' }}>
+              <img src="/almadados-logo.png" alt="Almadados Logo" style={{ maxHeight: '50px', width: 'auto' }} />
+              <div>
+                <h1 style={{ fontSize: '16px', fontWeight: 'bold', margin: '0', color: '#333' }}>Almadados Informática, Lda</h1>
+                <p style={{ margin: '2px 0', fontSize: '11px', color: '#666' }}>R. Ramiro Ferrão, 40 Esc. Dto</p>
+                <p style={{ margin: '2px 0', fontSize: '11px', color: '#666' }}>2800 - 505 Almada</p>
+                <p style={{ margin: '2px 0', fontSize: '11px', color: '#666' }}>Mat. Con. Reg. de nº</p>
+                <p style={{ margin: '2px 0', fontSize: '11px', color: '#666' }}>Contribuinte: 503708798</p>
+              </div>
+            </div>
+            
+            {/* Informações do relatório */}
+            <div style={{ marginBottom: '25px', textAlign: 'left' }}>
+              <h2 style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 5px 0', color: '#333' }}>
+                Relatório de {filtroTipo === 'tarefas' ? 'Tarefas' : filtroTipo === 'propostas' ? 'Propostas' : 'Clientes'}
+              </h2>
+              <p style={{ margin: '2px 0', fontSize: '11px', color: '#666' }}>Data: {new Date().toLocaleDateString('pt-PT')}</p>
+              <p style={{ margin: '2px 0', fontSize: '11px', color: '#666' }}>Hora: {new Date().toLocaleTimeString('pt-PT')}</p>
+            </div>
             {filtroTipo === 'tarefas' && (
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10px' }}>
                 <thead>
@@ -621,6 +641,27 @@ export function ListagensSection() {
                 </tbody>
               </table>
             )}
+            
+            {/* Rodapé */}
+            <div style={{ 
+              position: 'absolute', 
+              bottom: '1cm', 
+              left: '0', 
+              right: '0', 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              fontSize: '9px', 
+              color: '#666' 
+            }}>
+              <div style={{ textAlign: 'left', lineHeight: '1.3' }}>
+                <div>Documento gerado automaticamente pelo Sistema de Gestão Almadados</div>
+                <div>© 2025 Almadados – Todos os direitos reservados</div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                Página 1 de 1
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
