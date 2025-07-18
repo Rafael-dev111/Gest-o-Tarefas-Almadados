@@ -57,11 +57,20 @@ export function ConfiguracoesSection() {
   };
 
   const handleLimparDados = () => {
-    if (confirm('Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.')) {
-      localStorage.removeItem('almadados-clientes');
-      localStorage.removeItem('almadados-tarefas');
-      localStorage.removeItem('almadados-propostas');
-      window.location.reload();
+    const senha = prompt('Digite a senha para confirmar a limpeza dos dados:');
+    if (senha === '503708798') {
+      if (confirm('Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.')) {
+        localStorage.removeItem('almadados-clientes');
+        localStorage.removeItem('almadados-tarefas');
+        localStorage.removeItem('almadados-propostas');
+        window.location.reload();
+      }
+    } else if (senha !== null) {
+      toast({
+        title: "Senha incorreta",
+        description: "A senha digitada está incorreta.",
+        variant: "destructive",
+      });
     }
   };
 

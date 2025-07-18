@@ -38,9 +38,6 @@ export default function AlmadadosApp() {
               <h1 className="text-3xl font-bold text-primary">Gestão de Tarefas</h1>
               <p className="text-gray-600">Almadados</p>
             </div>
-            <div className="text-sm text-gray-500">
-              Sistema de gestão offline com armazenamento local
-            </div>
           </div>
         </div>
       </div>

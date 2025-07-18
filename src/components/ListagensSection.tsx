@@ -111,9 +111,10 @@ export function ListagensSection() {
                   color: #333;
                 }
                 .company-info p {
-                  margin: 2px 0;
+                  margin: 1px 0;
                   font-size: 11px;
                   color: #666;
+                  line-height: 1.2;
                 }
                 
                 /* Informações do relatório */
@@ -126,11 +127,6 @@ export function ListagensSection() {
                   font-weight: bold;
                   margin: 0 0 5px 0;
                   color: #333;
-                }
-                .report-info p {
-                  margin: 2px 0;
-                  font-size: 11px;
-                  color: #666;
                 }
                 
                 /* Tabela */
@@ -232,20 +228,17 @@ export function ListagensSection() {
               </div>
               
               <div class="report-info">
-                <h2>Relatório de ${filtroTipo === 'tarefas' ? 'Tarefas' : filtroTipo === 'propostas' ? 'Propostas' : 'Clientes'}</h2>
-                <p>Data: ${new Date().toLocaleDateString('pt-PT')}</p>
-                <p>Hora: ${new Date().toLocaleTimeString('pt-PT')}</p>
+                <h2>Relatório de ${filtroTipo === 'tarefas' ? 'Tarefas' : filtroTipo === 'propostas' ? 'Propostas' : 'Clientes'} | Data: ${new Date().toLocaleDateString('pt-PT')} | Hora: ${new Date().toLocaleTimeString('pt-PT')}</h2>
               </div>
               
               ${conteudo.innerHTML}
               
               <div class="footer">
                 <div class="footer-left">
-                  <div>Documento gerado automaticamente pelo Sistema de Gestão Almadados</div>
-                  <div>© 2025 Almadados – Todos os direitos reservados</div>
+                  Gestão Almadados© 2025 Almadados - Todos os direitos reservados
                 </div>
                 <div class="footer-right">
-                  Página 1 de 1
+                  página 1 de 1
                 </div>
               </div>
             </body>
